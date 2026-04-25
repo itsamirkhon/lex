@@ -1,0 +1,11 @@
+node_modules/
+web/node_modules/
+web/.next/
+.env
+.lex/npm/
+.lex/sessions/
+.lex/.state/
+.lex/memory/
+outputs/
+*.log
+*.tgz
