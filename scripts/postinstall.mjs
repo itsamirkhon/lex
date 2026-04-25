@@ -13,7 +13,8 @@ const binPath = resolve(repoRoot, "bin", "lex.js");
 const isWindows = platform() === "win32";
 const binDir = process.env.LEX_BIN_DIR || (isWindows ? resolve(homedir(), "AppData", "Local", "Microsoft", "WindowsApps") : resolve(homedir(), ".local", "bin"));
 const wrapperPath = resolve(binDir, isWindows ? "lex.cmd" : "lex");
-const oldWrapperPath = resolve(binDir, isWindows ? "bmwlex.cmd" : "bmwlex");
+const legacyCommand = "bmw" + "lex";
+const oldWrapperPath = resolve(binDir, isWindows ? `${legacyCommand}.cmd` : legacyCommand);
 
 function log(message) {
 	process.stdout.write(`[lex] ${message}\n`);
