@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
+import dynamic from "next/dynamic";
+
+const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 const COMMANDS = [
   { cmd: "/contract-review", desc: "Review a contract for risks and BMW compliance", args: "<file> [--jurisdiction de|us|uk|fr]" },
