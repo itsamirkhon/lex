@@ -1,5 +1,6 @@
 import "dotenv/config";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { createInterface } from "node:readline";
 import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
@@ -27,7 +28,56 @@ import { runSetup } from "./setup/setup.js";
 import { ASH, printAsciiHeader, printInfo, printPanel, printSection, RESET, SAGE } from "./ui/terminal.js";
 import { createModelRegistry } from "./model/registry.js";
 import { cliCommandSections, formatCliWorkflowUsage, legacyFlags, readPromptSpecs, topLevelCommandNames, } from "../metadata/commands.mjs";
-const TOP_LEVEL_COMMANDS = new Set(topLevelCommandNames);
+const TOP_LEVEL_COMMANDS = new Set([...topLevelCommandNames, "auth"]);
+async function handleAuthCommand(appRoot, agentDir) {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    const ask = (q) => new Promise((res) => rl.question(q, res));
+    console.log("\n⚖  Lex — BMW Legal AI Platform\n");
+    console.log("Paste your OpenRouter API key (starts with sk-or-v1-...)");
+    console.log("Get one at: https://openrouter.ai/keys\n");
+    const key = (await ask("OpenRouter API key: ")).trim();
+    rl.close();
+    if (!key.startsWith("sk-or-v1-") && !key.startsWith("sk-")) {
+        console.error("\nInvalid key format. Expected sk-or-v1-... from openrouter.ai");
+        process.exit(1);
+    }
+    // Save to ~/.lex/agent/auth.json
+    mkdirSync(agentDir, { recursive: true });
+    const authPath = resolve(agentDir, "auth.json");
+    const existing = existsSync(authPath) ? JSON.parse(readFileSync(authPath, "utf8")) : {};
+    existing.openrouter = { type: "api_key", key };
+    writeFileSync(authPath, JSON.stringify(existing, null, 2) + "\n", "utf8");
+    // Also save to .env in project root
+    const envPath = resolve(appRoot, ".env");
+    const envLine = `OPENROUTER_API_KEY=${key}`;
+    if (existsSync(envPath)) {
+        let env = readFileSync(envPath, "utf8");
+        if (env.includes("OPENROUTER_API_KEY=")) {
+            env = env.replace(/^OPENROUTER_API_KEY=.*/m, envLine);
+        } else {
+            env += `\n${envLine}\n`;
+        }
+        writeFileSync(envPath, env, "utf8");
+    } else {
+        writeFileSync(envPath, `${envLine}\n`, "utf8");
+    }
+    // Set default model to OpenRouter Claude
+    try {
+        const { SettingsManager } = await import("@mariozechner/pi-coding-agent");
+        const settingsPath = resolve(agentDir, "settings.json");
+        const sm = SettingsManager.create(appRoot, agentDir);
+        const settings = sm.getSettings();
+        if (!settings.defaultModel) {
+            settings.defaultModel = "openrouter/anthropic/claude-sonnet-4-5";
+            await sm.flush();
+        }
+    } catch {}
+    console.log("\n✓ API key saved to ~/.lex/agent/auth.json");
+    console.log("\nYou're ready! Try:");
+    console.log("  lex contract-review samples/acme-supplier-nda-draft.md --jurisdiction de");
+    console.log("  lex compliance-check \"Acme GmbH\" --check-type sanctions");
+    console.log("  lex legal-research \"force majeure\" --jurisdiction de,uk\n");
+}
 function printHelpLine(usage, description) {
     const width = 30;
     const padding = Math.max(1, width - usage.length);
@@ -453,6 +503,10 @@ export async function main() {
         return;
     }
     const [command, ...rest] = positionals;
+    if (command === "auth") {
+        await handleAuthCommand(appRoot, lexAgentDir);
+        return;
+    }
     if (command === "help") {
         printHelp(appRoot);
         return;

@@ -75,6 +75,7 @@ export const cliCommandSections = [
 		title: "Core",
 		commands: [
 			{ usage: "lex", description: "Launch the interactive REPL." },
+			{ usage: "lex auth", description: "Save your OpenRouter API key — run this first!" },
 			{ usage: "lex chat [prompt]", description: "Start chat explicitly, optionally with an initial prompt." },
 			{ usage: "lex help", description: "Show CLI help." },
 			{ usage: "lex setup", description: "Run the guided setup wizard." },
