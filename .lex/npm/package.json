@@ -1,0 +1,20 @@
+{
+  "name": "feynman-packages",
+  "private": true,
+  "dependencies": {
+    "@aliou/pi-processes": "^0.7.2",
+    "@companion-ai/alpha-hub": "^0.1.3",
+    "@kaiserlich-dev/pi-session-search": "^1.1.1",
+    "@samfp/pi-memory": "^0.3.2",
+    "@tmustier/pi-ralph-wiggum": "^0.2.0",
+    "@walterra/pi-charts": "^0.0.5",
+    "pi-btw": "^0.3.7",
+    "pi-docparser": "^1.1.1",
+    "pi-markdown-preview": "^0.9.6",
+    "pi-mermaid": "^0.3.0",
+    "pi-schedule-prompt": "^0.1.2",
+    "pi-subagents": "^0.17.0",
+    "pi-web-access": "^0.10.6",
+    "pi-zotero": "^0.1.0"
+  }
+}

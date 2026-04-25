@@ -1,0 +1,14 @@
+{
+  "packages": [
+    "npm:pi-subagents",
+    "npm:pi-docparser",
+    "npm:pi-web-access",
+    "npm:pi-markdown-preview",
+    "npm:pi-mermaid",
+    "npm:@aliou/pi-processes",
+    "npm:@kaiserlich-dev/pi-session-search",
+    "npm:@samfp/pi-memory"
+  ],
+  "quietStartup": true,
+  "collapseChangelog": true
+}
