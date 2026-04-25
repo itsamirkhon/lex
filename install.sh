@@ -4,7 +4,7 @@
 
 set -eu
 
-REPO_URL="${LEX_REPO_URL:-https://github.com/YOUR_ORG/lex}"
+REPO_URL="${LEX_REPO_URL:-https://github.com/itsamirkhon/lex}"
 INSTALL_DIR="${LEX_INSTALL_DIR:-$HOME/.local/share/lex}"
 BIN_DIR="${LEX_BIN_DIR:-$HOME/.local/bin}"
 
@@ -99,4 +99,4 @@ printf '  2. Run setup:    lex setup\n'
 printf '  3. Try a demo:   lex contract-review samples/acme-supplier-nda-draft.md --jurisdiction de\n'
 printf '  4. Web UI:       cd %s/web && npm install && npm run dev\n' "$INSTALL_DIR"
 printf '\n'
-printf 'Docs: %s\n' "$REPO_URL"
+printf 'Docs: https://github.com/itsamirkhon/lex\n'
