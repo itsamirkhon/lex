@@ -61,16 +61,12 @@ async function handleAuthCommand(appRoot, agentDir) {
     } else {
         writeFileSync(envPath, `${envLine}\n`, "utf8");
     }
-    // Set default model to OpenRouter Claude
+    // Set default model to OpenRouter Claude directly in settings.json
     try {
-        const { SettingsManager } = await import("@mariozechner/pi-coding-agent");
         const settingsPath = resolve(agentDir, "settings.json");
-        const sm = SettingsManager.create(appRoot, agentDir);
-        const settings = sm.getSettings();
-        if (!settings.defaultModel) {
-            settings.defaultModel = "openrouter/anthropic/claude-sonnet-4-5";
-            await sm.flush();
-        }
+        const existing2 = existsSync(settingsPath) ? JSON.parse(readFileSync(settingsPath, "utf8")) : {};
+        existing2.defaultModel = "openrouter/anthropic/claude-sonnet-4-5";
+        writeFileSync(settingsPath, JSON.stringify(existing2, null, 2) + "\n", "utf8");
     } catch {}
     console.log("\n✓ API key saved to ~/.lex/agent/auth.json");
     console.log("\nYou're ready! Try:");
