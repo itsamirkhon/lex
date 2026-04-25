@@ -17,21 +17,11 @@ const SOURCE_TYPE_FILTERS: Record<string, string> = {
 
 export function registerLegalSearchTools(pi: ExtensionAPI): void {
 	pi.registerTool("legal_web_search", {
-		description: "Web search pre-filtered for authoritative legal sources by jurisdiction. Returns statutes, regulations, and case law from official databases.",
+		description: "Web search pre-filtered for authoritative legal sources by jurisdiction (de/us/uk/fr/eu). Returns statutes, regulations, and case law from official databases.",
 		parameters: Type.Object({
 			query: Type.String({ description: "The legal question or search terms" }),
-			jurisdiction: Type.Optional(Type.Union([
-				Type.Literal("de"),
-				Type.Literal("us"),
-				Type.Literal("uk"),
-				Type.Literal("fr"),
-				Type.Literal("eu"),
-			], { description: "Jurisdiction to filter results for" })),
-			sourceType: Type.Optional(Type.Union([
-				Type.Literal("statute"),
-				Type.Literal("case"),
-				Type.Literal("regulation"),
-			], { description: "Type of legal source to prioritize" })),
+			jurisdiction: Type.Optional(Type.String({ description: "Jurisdiction: de, us, uk, fr, or eu" })),
+			sourceType: Type.Optional(Type.String({ description: "Source type: statute, case, or regulation" })),
 		}),
 		handler: async ({ query, jurisdiction, sourceType }) => {
 			const parts = [query];
@@ -42,7 +32,6 @@ export function registerLegalSearchTools(pi: ExtensionAPI): void {
 				parts.push(SOURCE_TYPE_FILTERS[sourceType]);
 			}
 			const constructedQuery = parts.join(" ");
-
 			return {
 				content: [{
 					type: "text" as const,
@@ -54,14 +43,10 @@ export function registerLegalSearchTools(pi: ExtensionAPI): void {
 	});
 
 	pi.registerTool("sanctions_check", {
-		description: "Search public sanctions lists (OFAC SDN, EU Consolidated, UN Security Council) for an entity.",
+		description: "Search public sanctions lists (OFAC SDN, EU Consolidated, UN Security Council) for an entity name.",
 		parameters: Type.Object({
 			entity: Type.String({ description: "Name of the person, company, or country to check" }),
-			entityType: Type.Optional(Type.Union([
-				Type.Literal("person"),
-				Type.Literal("company"),
-				Type.Literal("country"),
-			], { description: "Type of entity" })),
+			entityType: Type.Optional(Type.String({ description: "Type of entity: person, company, or country" })),
 		}),
 		handler: async ({ entity, entityType }) => {
 			const today = new Date().toISOString().split("T")[0];
@@ -82,15 +67,13 @@ export function registerLegalSearchTools(pi: ExtensionAPI): void {
 					url: "https://scsanctions.un.org/search/",
 				},
 			];
-
 			const instructions = searchTargets.map((t) =>
 				`**${t.list}:** Use web_search with query: ${t.query}\nOfficial list: ${t.url}`
 			).join("\n\n");
-
 			return {
 				content: [{
 					type: "text" as const,
-					text: `Sanctions check for "${entity}" (${entityType ?? "entity"}) — Date: ${today}\n\nSearch each list using web_search:\n\n${instructions}\n\nFor each list: record the search query used, the date, and the result (MATCH / NO_MATCH / POSSIBLE_MATCH). A POSSIBLE_MATCH occurs when a similar name exists but details differ — flag for lawyer review.\n\nIMPORTANT: Sanctions lists change daily. This check is only valid for today's date (${today}).`,
+					text: `Sanctions check for "${entity}" (${entityType ?? "entity"}) — Date: ${today}\n\nSearch each list using web_search:\n\n${instructions}\n\nFor each list record: query used, date, result (MATCH / NO_MATCH / POSSIBLE_MATCH). Flag POSSIBLE_MATCH for lawyer review.\n\nIMPORTANT: Sanctions lists change daily. This check is only valid for ${today}.`,
 				}],
 				details: { entity, entityType, checkDate: today, listsToCheck: searchTargets.map((t) => t.list) },
 			};
@@ -101,20 +84,15 @@ export function registerLegalSearchTools(pi: ExtensionAPI): void {
 		description: "Search EUR-Lex for EU regulations, directives, and decisions.",
 		parameters: Type.Object({
 			query: Type.String({ description: "Topic, regulation name, or directive number" }),
-			documentType: Type.Optional(Type.Union([
-				Type.Literal("regulation"),
-				Type.Literal("directive"),
-				Type.Literal("decision"),
-			], { description: "Type of EU legal document" })),
+			documentType: Type.Optional(Type.String({ description: "Document type: regulation, directive, or decision" })),
 		}),
 		handler: async ({ query, documentType }) => {
 			const typeFilter = documentType ? ` ${documentType}` : "";
 			const searchQuery = `${query}${typeFilter} site:eur-lex.europa.eu`;
-
 			return {
 				content: [{
 					type: "text" as const,
-					text: `Search EUR-Lex using web_search with: "${searchQuery}"\n\nDirect EUR-Lex search: https://eur-lex.europa.eu/search.html?query=${encodeURIComponent(query)}&scope=EURLEX\n\nFor any result found:\n1. Note the document number (e.g., "Regulation (EU) 2016/679")\n2. Fetch the full text URL from EUR-Lex\n3. Verify the document type matches: ${documentType ?? "any"}\n4. Check the document is currently in force (not repealed)`,
+					text: `Search EUR-Lex using web_search with: "${searchQuery}"\n\nDirect EUR-Lex search: https://eur-lex.europa.eu/search.html?query=${encodeURIComponent(query)}&scope=EURLEX\n\nFor any result: note the document number, fetch the full text URL, verify document type matches "${documentType ?? "any"}", check it is currently in force.`,
 				}],
 				details: { query, documentType, searchQuery },
 			};

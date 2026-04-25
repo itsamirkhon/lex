@@ -1,11 +1,11 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 
-import { registerDiscoveryCommands } from "./legal-tools/discovery.js";
-import { registerDocumentTools } from "./legal-tools/document-tools.js";
-import { installLexHeader } from "./legal-tools/header.js";
-import { registerLegalSearchTools } from "./legal-tools/legal-search-tools.js";
-import { registerMatterCommand } from "./legal-tools/matter.js";
-import { registerInitCommand, registerOutputsCommand } from "./legal-tools/project.js";
+import { registerDiscoveryCommands } from "./legal-tools/discovery.ts";
+import { registerDocumentTools } from "./legal-tools/document-tools.ts";
+import { installLexHeader } from "./legal-tools/header.ts";
+import { registerLegalSearchTools } from "./legal-tools/legal-search-tools.ts";
+import { registerMatterCommand } from "./legal-tools/matter.ts";
+import { registerInitCommand, registerOutputsCommand } from "./legal-tools/project.ts";
 
 export default function legalTools(pi: ExtensionAPI): void {
 	const cache: { agentSummaryPromise?: Promise<{ agents: string[]; chains: string[] }> } = {};

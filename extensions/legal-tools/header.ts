@@ -6,7 +6,7 @@ import { resolve as resolvePath } from "node:path";
 import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
 import { truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
 
-import { APP_ROOT, LEX_AGENT_LOGO, LEX_VERSION } from "./shared.js";
+import { APP_ROOT, LEX_AGENT_LOGO, LEX_VERSION } from "./shared.ts";
 
 function visibleLength(text: string): number {
 	return visibleWidth(text);
