@@ -1,13 +1,11 @@
 #!/bin/sh
-# Lex — BMW Legal AI Platform installer
+# Lex installer
 # Usage: curl -fsSL https://raw.githubusercontent.com/itsamirkhon/lex/main/install.sh | bash
 
 set -eu
 
 REPO_URL="${LEX_REPO_URL:-https://github.com/itsamirkhon/lex}"
 INSTALL_DIR="${LEX_INSTALL_DIR:-$HOME/.local/share/lex}"
-BIN_DIR="${LEX_BIN_DIR:-$HOME/.local/bin}"
-BIN_NAME="bmwlex"
 
 step() { printf '\033[1;34m==>\033[0m %s\n' "$1"; }
 ok()   { printf '\033[1;32m ok\033[0m %s\n' "$1"; }
@@ -31,7 +29,7 @@ check_git() {
   ok "git $(git --version | head -c 30)"
 }
 
-step "Installing Lex — BMW Legal AI Platform"
+step "Installing Lex"
 
 check_node
 check_git
@@ -47,51 +45,17 @@ fi
 
 ok "Repository ready"
 
-step "Installing dependencies"
+step "Running npm install"
 cd "$INSTALL_DIR"
-npm install --omit=dev --silent 2>/dev/null || npm install --production --silent 2>/dev/null || true
-ok "Dependencies installed"
-
-# Create bin wrapper named bmwlex (avoids conflict with system /usr/bin/lex)
-mkdir -p "$BIN_DIR"
-cat >"$BIN_DIR/$BIN_NAME" <<EOF
-#!/bin/sh
-set -eu
-exec node "$INSTALL_DIR/bin/lex.js" "\$@"
-EOF
-chmod 0755 "$BIN_DIR/$BIN_NAME"
-ok "Created $BIN_DIR/$BIN_NAME"
-
-# Add BIN_DIR to PATH if needed
-add_to_path() {
-  case ":${PATH}:" in
-    *":$BIN_DIR:"*) return ;;
-  esac
-
-  profile="$HOME/.profile"
-  case "${SHELL:-}" in
-    */zsh)  profile="$HOME/.zshrc" ;;
-    */bash) profile="$HOME/.bashrc" ;;
-  esac
-
-  line="export PATH=\"$BIN_DIR:\$PATH\""
-  if ! grep -qF "$line" "$profile" 2>/dev/null; then
-    printf '\n# Added by Lex installer\n%s\n' "$line" >>"$profile"
-  fi
-
-  # Apply immediately for current session hint
-  export PATH="$BIN_DIR:$PATH"
-}
-
-add_to_path
+npm install
+ok "npm install completed"
 
 printf '\n'
 printf '\033[1;32m✓ Lex installed successfully!\033[0m\n'
 printf '\n'
 printf 'Run these commands now:\n'
 printf '\n'
-printf '  \033[1mexport PATH="%s:$PATH"\033[0m   # activate in current shell\n' "$BIN_DIR"
-printf '  \033[1mbmwlex auth\033[0m               # enter your OpenRouter API key\n'
-printf '  \033[1mbmwlex contract-review %s/samples/acme-supplier-nda-draft.md --jurisdiction de\033[0m\n' "$INSTALL_DIR"
+printf '  \033[1mlex auth\033[0m                  # enter your OpenRouter API key\n'
+printf '  \033[1mlex contract-review %s/samples/acme-supplier-nda-draft.md --jurisdiction de\033[0m\n' "$INSTALL_DIR"
 printf '\n'
 printf 'Docs: https://github.com/itsamirkhon/lex\n'

@@ -31,8 +31,8 @@ if (compareNodeVersions(parsedNodeVersion, parseNodeVersion(MIN_NODE_VERSION)) <
       ? "Install a supported Node.js release from https://nodejs.org, or use the standalone installer:"
       : `Switch to a supported Node release with \`nvm install ${PREFERRED_NODE_MAJOR} && nvm use ${PREFERRED_NODE_MAJOR}\`, or use the standalone installer:`);
   console.error(isWindows
-    ? "irm https://github.com/bmw-legal/lex/releases.ps1 | iex"
-    : "curl -fsSL https://github.com/bmw-legal/lex/releases | bash");
+    ? "Install Node.js from https://nodejs.org, then run npm install again."
+    : "Install a supported Node.js release, then run npm install again.");
   process.exit(1);
 }
 const here = import.meta.dirname;

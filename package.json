@@ -1,18 +1,24 @@
 {
-  "name": "@bmw/lex",
+  "name": "bmw-lex",
   "version": "0.1.0",
   "description": "Lex — BMW Legal AI Agent Platform built on Pi",
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=20.19.0 <25"
+    "node": ">=20.19.0 <27"
   },
   "bin": {
     "lex": "bin/lex.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "bin/",
     "dist/",
+    "scripts/",
+    "logo.mjs",
+    "logo.d.mts",
     "metadata/",
     ".lex/agents/",
     ".lex/settings.json",
@@ -28,6 +34,7 @@
     ".env.example"
   ],
   "scripts": {
+    "postinstall": "node ./scripts/postinstall.mjs",
     "start:dist": "node ./bin/lex.js"
   },
   "keywords": [
@@ -86,7 +93,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bmw-legal/lex.git"
+    "url": "git+https://github.com/itsamirkhon/lex.git"
   },
-  "homepage": "https://github.com/bmw-legal/lex#readme"
+  "homepage": "https://github.com/itsamirkhon/lex#readme"
 }
