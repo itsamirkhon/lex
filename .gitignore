@@ -6,6 +6,8 @@ web/.next/
 .lex/sessions/
 .lex/.state/
 .lex/memory/
+.lex/web-app/
+.lex/web-localstorage*
 outputs/
 *.log
 *.tgz

@@ -12,6 +12,23 @@ lex
 
 The npm package is `bmw-lex`; the installed command is `lex`.
 
+If `lex auth` prints `flex: can't open auth`, your shell is running the system lexer at `/usr/bin/lex` instead of Lex. Use the fallback command or fix `PATH`:
+
+```sh
+bmw-lex auth
+bmw-lex
+# or
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+To start the web interface:
+
+```sh
+lex-web
+```
+
+By default it opens `http://localhost:3000` and writes uploads/results under the directory where you ran `lex-web`.
+
 For local development from a clone:
 
 ```sh
@@ -19,6 +36,7 @@ git clone https://github.com/itsamirkhon/lex.git
 cd lex
 npm install
 lex --version
+lex-web --help
 ```
 
 Local `npm install` creates the `lex` command in `~/.local/bin` and adds that directory to your shell profile when needed. If the current terminal still cannot find `lex`, run:

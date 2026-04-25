@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { NextRequest, NextResponse } from "next/server";
 
-const PROJECT_ROOT = resolve(process.cwd(), "..");
+const PROJECT_ROOT = resolve(process.env.LEX_WORKSPACE_ROOT ?? resolve(process.cwd(), ".."));
 
 export async function POST(req: NextRequest) {
   const form = await req.formData();
