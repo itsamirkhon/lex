@@ -1,6 +1,6 @@
 {
   "name": "bmw-lex",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lex — BMW Legal AI Agent Platform built on Pi",
   "license": "MIT",
   "type": "module",
