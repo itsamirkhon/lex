@@ -920,3 +920,21 @@ if (existsSync(piMemoryPath)) {
 	}
 	writeFileSync(piMemoryPath, source, "utf8");
 }
+
+// Patch: filter tools without names before sending to OpenRouter/OpenAI API
+// Fixes "400 4.function.name: Invalid input: expected string, received undefined"
+{
+  const piAiPaths = [
+    resolve(appRoot, "node_modules", "@mariozechner", "pi-ai", "dist", "providers", "openai-completions.js"),
+  ];
+  for (const p of piAiPaths) {
+    if (!existsSync(p)) continue;
+    let src = readFileSync(p, "utf8");
+    const original = "return tools.map((tool) => ({";
+    const patched = 'return tools.filter((tool) => tool.name && typeof tool.name === "string").map((tool) => ({';
+    if (!src.includes(patched)) {
+      src = src.replace(original, patched);
+      writeFileSync(p, src, "utf8");
+    }
+  }
+}
