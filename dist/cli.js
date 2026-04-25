@@ -74,9 +74,9 @@ async function handleAuthCommand(appRoot, agentDir) {
     } catch {}
     console.log("\n✓ API key saved to ~/.lex/agent/auth.json");
     console.log("\nYou're ready! Try:");
-    console.log("  lex contract-review samples/acme-supplier-nda-draft.md --jurisdiction de");
-    console.log("  lex compliance-check \"Acme GmbH\" --check-type sanctions");
-    console.log("  lex legal-research \"force majeure\" --jurisdiction de,uk\n");
+    console.log("  bmwlex contract-review samples/acme-supplier-nda-draft.md --jurisdiction de");
+    console.log("  bmwlex compliance-check \"Acme GmbH\" --check-type sanctions");
+    console.log("  bmwlex legal-research \"force majeure\" --jurisdiction de,uk\n");
 }
 function printHelpLine(usage, description) {
     const width = 30;

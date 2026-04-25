@@ -1,18 +1,17 @@
 #!/bin/sh
 # Lex — BMW Legal AI Platform installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/YOUR_ORG/lex/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/itsamirkhon/lex/main/install.sh | bash
 
 set -eu
 
 REPO_URL="${LEX_REPO_URL:-https://github.com/itsamirkhon/lex}"
 INSTALL_DIR="${LEX_INSTALL_DIR:-$HOME/.local/share/lex}"
 BIN_DIR="${LEX_BIN_DIR:-$HOME/.local/bin}"
+BIN_NAME="bmwlex"
 
 step() { printf '\033[1;34m==>\033[0m %s\n' "$1"; }
 ok()   { printf '\033[1;32m ok\033[0m %s\n' "$1"; }
 fail() { printf '\033[1;31mERR\033[0m %s\n' "$1" >&2; exit 1; }
-
-# ── Prerequisites ────────────────────────────────────────────────────────────
 
 check_node() {
   if ! command -v node >/dev/null 2>&1; then
@@ -32,8 +31,6 @@ check_git() {
   ok "git $(git --version | head -c 30)"
 }
 
-# ── Install ───────────────────────────────────────────────────────────────────
-
 step "Installing Lex — BMW Legal AI Platform"
 
 check_node
@@ -50,23 +47,22 @@ fi
 
 ok "Repository ready"
 
-# Install npm dependencies (skips devDeps, uses existing node_modules if present)
 step "Installing dependencies"
 cd "$INSTALL_DIR"
 npm install --omit=dev --silent 2>/dev/null || npm install --production --silent 2>/dev/null || true
 ok "Dependencies installed"
 
-# Create bin wrapper
+# Create bin wrapper named bmwlex (avoids conflict with system /usr/bin/lex)
 mkdir -p "$BIN_DIR"
-cat >"$BIN_DIR/lex" <<EOF
+cat >"$BIN_DIR/$BIN_NAME" <<EOF
 #!/bin/sh
 set -eu
 exec node "$INSTALL_DIR/bin/lex.js" "\$@"
 EOF
-chmod 0755 "$BIN_DIR/lex"
-ok "Created $BIN_DIR/lex"
+chmod 0755 "$BIN_DIR/$BIN_NAME"
+ok "Created $BIN_DIR/$BIN_NAME"
 
-# Add to PATH if needed
+# Add BIN_DIR to PATH if needed
 add_to_path() {
   case ":${PATH}:" in
     *":$BIN_DIR:"*) return ;;
@@ -81,22 +77,21 @@ add_to_path() {
   line="export PATH=\"$BIN_DIR:\$PATH\""
   if ! grep -qF "$line" "$profile" 2>/dev/null; then
     printf '\n# Added by Lex installer\n%s\n' "$line" >>"$profile"
-    printf '\033[1;33m  PATH updated in %s\033[0m\n' "$profile"
-    printf '  Run: \033[1mexport PATH="%s:$PATH"\033[0m to use lex now\n' "$BIN_DIR"
   fi
+
+  # Apply immediately for current session hint
+  export PATH="$BIN_DIR:$PATH"
 }
 
 add_to_path
 
-# ── Done ──────────────────────────────────────────────────────────────────────
-
 printf '\n'
 printf '\033[1;32m✓ Lex installed successfully!\033[0m\n'
 printf '\n'
-printf 'Next steps:\n'
-printf '  1. Reload your shell (or run: export PATH="%s:$PATH")\n' "$BIN_DIR"
-printf '  2. Run setup:    lex setup\n'
-printf '  3. Try a demo:   lex contract-review samples/acme-supplier-nda-draft.md --jurisdiction de\n'
-printf '  4. Web UI:       cd %s/web && npm install && npm run dev\n' "$INSTALL_DIR"
+printf 'Run these commands now:\n'
+printf '\n'
+printf '  \033[1mexport PATH="%s:$PATH"\033[0m   # activate in current shell\n' "$BIN_DIR"
+printf '  \033[1mbmwlex auth\033[0m               # enter your OpenRouter API key\n'
+printf '  \033[1mbmwlex contract-review %s/samples/acme-supplier-nda-draft.md --jurisdiction de\033[0m\n' "$INSTALL_DIR"
 printf '\n'
 printf 'Docs: https://github.com/itsamirkhon/lex\n'
