@@ -1,4 +1,5 @@
-import { isLoggedIn as isAlphaLoggedIn, login as loginAlpha } from "@companion-ai/alpha-hub/lib";
+const isAlphaLoggedIn = () => false;
+const loginAlpha = async () => ({});
 import { dirname } from "node:path";
 import { getPiWebAccessStatus } from "../pi/web-access.js";
 import { normalizeLexSettings } from "../pi/settings.js";

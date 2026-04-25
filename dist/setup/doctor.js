@@ -1,4 +1,5 @@
-import { getUserName as getAlphaUserName, isLoggedIn as isAlphaLoggedIn } from "@companion-ai/alpha-hub/lib";
+const getAlphaUserName = () => null;
+const isAlphaLoggedIn = () => false;
 import { readFileSync } from "node:fs";
 import { formatPiWebAccessDoctorLines, getPiWebAccessStatus } from "../pi/web-access.js";
 import { BROWSER_FALLBACK_PATHS, PANDOC_FALLBACK_PATHS, resolveExecutable } from "../system/executables.js";
