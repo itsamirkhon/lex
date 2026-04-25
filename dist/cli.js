@@ -17,7 +17,7 @@ import { installPackageSources, updateConfiguredPackages } from "./pi/package-op
 import { MAX_NATIVE_PACKAGE_NODE_MAJOR } from "./pi/package-presets.js";
 import { CORE_PACKAGE_SOURCES, getOptionalPackagePresetSources, isOptionalPackagePresetSupported, listOptionalPackagePresetInstallTargets, listOptionalPackagePresets, normalizeOptionalPackagePresetName, resolvePackageUpdateSources, } from "./pi/package-presets.js";
 import { normalizeLexSettings, normalizeThinkingLevel, parseModelSpec } from "./pi/settings.js";
-import { applyFeynmanPackageManagerEnv } from "./pi/runtime.js";
+import { applyLexPackageManagerEnv } from "./pi/runtime.js";
 import { getConfiguredServiceTier, normalizeServiceTier, setConfiguredServiceTier } from "./model/service-tier.js";
 import { authenticateModelProvider, getCurrentModelSpec, loginModelProvider, logoutModelProvider, printModelList, setDefaultModelSpec, } from "./model/commands.js";
 import { buildModelStatusSnapshotFromRecords, getAvailableModelRecords, getSupportedModelRecords } from "./model/catalog.js";
@@ -223,14 +223,14 @@ async function handleUpdateCommand(workingDir, lexAgentDir, source) {
     }
 }
 async function handlePackagesCommand(subcommand, args, workingDir, lexAgentDir) {
-    applyFeynmanPackageManagerEnv(lexAgentDir);
+    applyLexPackageManagerEnv(lexAgentDir);
     const settingsManager = SettingsManager.create(workingDir, lexAgentDir);
     const configuredSources = new Set(settingsManager
         .getPackages()
         .map((entry) => (typeof entry === "string" ? entry : entry.source))
         .filter((entry) => typeof entry === "string"));
     if (!subcommand || subcommand === "list") {
-        printPanel("Feynman Packages", [
+        printPanel("Lex Packages", [
             "Core packages are installed by default to keep first-run setup fast.",
         ]);
         printSection("Core");
@@ -288,7 +288,7 @@ async function handlePackagesCommand(subcommand, args, workingDir, lexAgentDir) 
     if (target === "generative-ui" && process.platform === "darwin" && isStandaloneBundle) {
         console.log("The generative-ui preset is currently unavailable in the standalone macOS bundle.");
         console.log("Its native glimpseui dependency fails to compile reliably in that environment.");
-        console.log("If you need generative-ui, install Feynman through npm instead of the standalone bundle.");
+        console.log("If you need generative-ui, install Lex through npm instead of the standalone bundle.");
         return;
     }
     const pendingSources = sources.filter((source) => !configuredSources.has(source));
@@ -463,7 +463,7 @@ export async function main() {
             console.log(lexVersion);
             return;
         }
-        throw new Error("Unable to determine the installed Feynman version.");
+        throw new Error("Unable to determine the installed Lex version.");
     }
     const workingDir = resolve(values.cwd ?? process.cwd());
     const sessionDir = resolve(values["session-dir"] ?? getDefaultSessionDir(lexHome));
@@ -609,8 +609,8 @@ export async function main() {
         appRoot,
         workingDir,
         sessionDir,
-        feynmanAgentDir: lexAgentDir,
-        feynmanVersion: lexVersion,
+        lexAgentDir,
+        lexVersion,
         mode,
         thinkingLevel: launchThinkingLevel,
         explicitModelSpec,

@@ -5,7 +5,7 @@ import { anthropicOAuthProvider } from "@mariozechner/pi-ai/oauth";
 export function getModelsJsonPath(authPath) {
     return resolve(dirname(authPath), "models.json");
 }
-function registerFeynmanModelOverlays(modelRegistry) {
+function registerLexModelOverlays(modelRegistry) {
     const anthropicModels = getModels("anthropic");
     if (anthropicModels.some((model) => model.id === "claude-opus-4-7")) {
         return;
@@ -30,6 +30,6 @@ function registerFeynmanModelOverlays(modelRegistry) {
 }
 export function createModelRegistry(authPath) {
     const registry = ModelRegistry.create(AuthStorage.create(authPath), getModelsJsonPath(authPath));
-    registerFeynmanModelOverlays(registry);
+    registerLexModelOverlays(registry);
     return registry;
 }

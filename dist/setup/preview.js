@@ -35,6 +35,6 @@ export function setupPreviewDependencies() {
     }
     return {
         status: "manual",
-        message: "pandoc is required for preview support. Install it manually and rerun `feynman --doctor`.",
+        message: "pandoc is required for preview support. Install it manually and rerun `lex --doctor`.",
     };
 }

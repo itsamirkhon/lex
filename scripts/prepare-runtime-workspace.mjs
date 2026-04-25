@@ -7,15 +7,15 @@ import { patchPiAgentCoreSource } from "./lib/pi-agent-core-patch.mjs";
 import { PI_SUBAGENTS_PATCH_TARGETS, patchPiSubagentsSource, stripPiSubagentBuiltinModelSource } from "./lib/pi-subagents-patch.mjs";
 
 const appRoot = resolve(import.meta.dirname, "..");
-const settingsPath = resolve(appRoot, ".feynman", "settings.json");
+const settingsPath = resolve(appRoot, ".lex", "settings.json");
 const packageJsonPath = resolve(appRoot, "package.json");
 const packageLockPath = resolve(appRoot, "package-lock.json");
-const feynmanDir = resolve(appRoot, ".feynman");
-const workspaceDir = resolve(appRoot, ".feynman", "npm");
+const lexDir = resolve(appRoot, ".lex");
+const workspaceDir = resolve(appRoot, ".lex", "npm");
 const workspaceNodeModulesDir = resolve(workspaceDir, "node_modules");
 const manifestPath = resolve(workspaceDir, ".runtime-manifest.json");
 const workspacePackageJsonPath = resolve(workspaceDir, "package.json");
-const workspaceArchivePath = resolve(feynmanDir, "runtime-workspace.tgz");
+const workspaceArchivePath = resolve(lexDir, "runtime-workspace.tgz");
 const PRUNE_VERSION = 4;
 const PINNED_RUNTIME_PACKAGES = [
 	"@mariozechner/pi-agent-core",
@@ -121,7 +121,7 @@ function writeWorkspacePackageJson() {
 		workspacePackageJsonPath,
 		JSON.stringify(
 			{
-				name: "feynman-runtime",
+				name: "lex-runtime",
 				private: true,
 			},
 			null,
@@ -254,7 +254,7 @@ function archiveIsCurrent() {
 function createWorkspaceArchive() {
 	rmSync(workspaceArchivePath, { force: true });
 
-	const result = spawnSync("tar", ["-czf", workspaceArchivePath, "-C", feynmanDir, "npm"], {
+	const result = spawnSync("tar", ["-czf", workspaceArchivePath, "-C", lexDir, "npm"], {
 		stdio: "inherit",
 	});
 	if (result.status !== 0) {
@@ -265,25 +265,25 @@ function createWorkspaceArchive() {
 const packageSpecs = readPackageSpecs();
 
 if (workspaceIsCurrent(packageSpecs)) {
-	console.log("[feynman] vendored runtime workspace already up to date");
+	console.log("[lex] vendored runtime workspace already up to date");
 	if (patchBundledPiAgentCore() || patchBundledPiSubagents()) {
 		writeManifest(packageSpecs);
-		console.log("[feynman] patched bundled Pi runtime");
+		console.log("[lex] patched bundled Pi runtime");
 	}
 	if (archiveIsCurrent()) {
 		process.exit(0);
 	}
-	console.log("[feynman] refreshing runtime workspace archive...");
+	console.log("[lex] refreshing runtime workspace archive...");
 	createWorkspaceArchive();
-	console.log("[feynman] runtime workspace archive ready");
+	console.log("[lex] runtime workspace archive ready");
 	process.exit(0);
 }
 
-console.log("[feynman] preparing vendored runtime workspace...");
+console.log("[lex] preparing vendored runtime workspace...");
 prepareWorkspace(packageSpecs);
 pruneWorkspace();
 patchBundledPiAgentCore();
 patchBundledPiSubagents();
 writeManifest(packageSpecs);
 createWorkspaceArchive();
-console.log("[feynman] vendored runtime workspace ready");
+console.log("[lex] vendored runtime workspace ready");

@@ -65,7 +65,7 @@ export function collectStatusSnapshot(options) {
 }
 export function runStatus(options) {
     const snapshot = collectStatusSnapshot(options);
-    printPanel("Feynman Status", [
+    printPanel("Lex Status", [
         "Current setup summary for the research shell.",
     ]);
     printSection("Core");
@@ -104,7 +104,7 @@ export function runDoctor(options) {
     const pandocPath = resolveExecutable("pandoc", PANDOC_FALLBACK_PATHS);
     const browserPath = process.env.PUPPETEER_EXECUTABLE_PATH ?? resolveExecutable("google-chrome", BROWSER_FALLBACK_PATHS);
     const missingPiBits = validatePiInstallation(options.appRoot);
-    printPanel("Feynman Doctor", [
+    printPanel("Lex Doctor", [
         "Checks config, auth, runtime wiring, and preview dependencies.",
     ]);
     console.log(`working dir: ${options.workingDir}`);
@@ -170,5 +170,5 @@ export function runDoctor(options) {
     for (const line of modelStatus.modelGuidance) {
         console.log(`next step: ${line}`);
     }
-    console.log("setup hint: feynman setup");
+    console.log("setup hint: lex setup");
 }

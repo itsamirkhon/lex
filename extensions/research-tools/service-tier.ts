@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 
-const FEYNMAN_SERVICE_TIERS = [
+const LEX_SERVICE_TIERS = [
 	"auto",
 	"default",
 	"flex",
@@ -12,11 +12,11 @@ const FEYNMAN_SERVICE_TIERS = [
 	"standard_only",
 ] as const;
 
-type FeynmanServiceTier = (typeof FEYNMAN_SERVICE_TIERS)[number];
+type LexServiceTier = (typeof LEX_SERVICE_TIERS)[number];
 
-const SERVICE_TIER_SET = new Set<string>(FEYNMAN_SERVICE_TIERS);
-const OPENAI_SERVICE_TIERS = new Set<FeynmanServiceTier>(["auto", "default", "flex", "priority"]);
-const ANTHROPIC_SERVICE_TIERS = new Set<FeynmanServiceTier>(["auto", "standard_only"]);
+const SERVICE_TIER_SET = new Set<string>(LEX_SERVICE_TIERS);
+const OPENAI_SERVICE_TIERS = new Set<LexServiceTier>(["auto", "default", "flex", "priority"]);
+const ANTHROPIC_SERVICE_TIERS = new Set<LexServiceTier>(["auto", "standard_only"]);
 
 type CommandContext = Parameters<Parameters<ExtensionAPI["registerCommand"]>[1]["handler"]>[1];
 
@@ -25,23 +25,23 @@ type SelectOption<T> = {
 	value: T;
 };
 
-function resolveFeynmanSettingsPath(): string {
+function resolveLexSettingsPath(): string {
 	const configured = process.env.PI_CODING_AGENT_DIR?.trim();
 	const agentDir = configured
 		? configured.startsWith("~/")
 			? resolve(homedir(), configured.slice(2))
 			: resolve(configured)
-		: resolve(homedir(), ".feynman", "agent");
+		: resolve(homedir(), ".lex", "agent");
 	return resolve(agentDir, "settings.json");
 }
 
-function normalizeServiceTier(value: string | undefined): FeynmanServiceTier | undefined {
+function normalizeServiceTier(value: string | undefined): LexServiceTier | undefined {
 	if (!value) return undefined;
 	const normalized = value.trim().toLowerCase();
-	return SERVICE_TIER_SET.has(normalized) ? (normalized as FeynmanServiceTier) : undefined;
+	return SERVICE_TIER_SET.has(normalized) ? (normalized as LexServiceTier) : undefined;
 }
 
-function getConfiguredServiceTier(settingsPath: string): FeynmanServiceTier | undefined {
+function getConfiguredServiceTier(settingsPath: string): LexServiceTier | undefined {
 	try {
 		const parsed = JSON.parse(readFileSync(settingsPath, "utf8")) as { serviceTier?: string };
 		return normalizeServiceTier(parsed.serviceTier);
@@ -50,7 +50,7 @@ function getConfiguredServiceTier(settingsPath: string): FeynmanServiceTier | un
 	}
 }
 
-function setConfiguredServiceTier(settingsPath: string, tier: FeynmanServiceTier | undefined): void {
+function setConfiguredServiceTier(settingsPath: string, tier: LexServiceTier | undefined): void {
 	let settings: Record<string, unknown> = {};
 	try {
 		settings = JSON.parse(readFileSync(settingsPath, "utf8")) as Record<string, unknown>;
@@ -65,14 +65,14 @@ function setConfiguredServiceTier(settingsPath: string, tier: FeynmanServiceTier
 	writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + "\n", "utf8");
 }
 
-function resolveActiveServiceTier(settingsPath: string): FeynmanServiceTier | undefined {
-	return normalizeServiceTier(process.env.FEYNMAN_SERVICE_TIER) ?? getConfiguredServiceTier(settingsPath);
+function resolveActiveServiceTier(settingsPath: string): LexServiceTier | undefined {
+	return normalizeServiceTier(process.env.LEX_SERVICE_TIER) ?? getConfiguredServiceTier(settingsPath);
 }
 
 function resolveProviderServiceTier(
 	provider: string | undefined,
-	tier: FeynmanServiceTier | undefined,
-): FeynmanServiceTier | undefined {
+	tier: LexServiceTier | undefined,
+): LexServiceTier | undefined {
 	if (!provider || !tier) return undefined;
 	if ((provider === "openai" || provider === "openai-codex") && OPENAI_SERVICE_TIERS.has(tier)) {
 		return tier;
@@ -96,7 +96,7 @@ async function selectOption<T>(
 	return options.find((option) => option.label === selected)?.value;
 }
 
-function parseRequestedTier(rawArgs: string): FeynmanServiceTier | null | undefined {
+function parseRequestedTier(rawArgs: string): LexServiceTier | null | undefined {
 	const trimmed = rawArgs.trim();
 	if (!trimmed) return undefined;
 	if (trimmed === "unset" || trimmed === "clear" || trimmed === "off") return null;
@@ -109,7 +109,7 @@ export function registerServiceTierControls(pi: ExtensionAPI): void {
 			return;
 		}
 
-		const activeTier = resolveActiveServiceTier(resolveFeynmanSettingsPath());
+		const activeTier = resolveActiveServiceTier(resolveLexSettingsPath());
 		const providerTier = resolveProviderServiceTier(ctx.model.provider, activeTier);
 		if (!providerTier) {
 			return;
@@ -124,7 +124,7 @@ export function registerServiceTierControls(pi: ExtensionAPI): void {
 	pi.registerCommand("service-tier", {
 		description: "View or set the provider service tier override used for supported models.",
 		handler: async (args, ctx) => {
-			const settingsPath = resolveFeynmanSettingsPath();
+			const settingsPath = resolveLexSettingsPath();
 			const requested = parseRequestedTier(args);
 
 			if (requested === undefined && !args.trim()) {
@@ -139,7 +139,7 @@ export function registerServiceTierControls(pi: ExtensionAPI): void {
 					"Select service tier",
 					[
 						{ label: current ? `unset (current: ${current})` : "unset (current)", value: null },
-						...FEYNMAN_SERVICE_TIERS.map((tier) => ({
+						...LEX_SERVICE_TIERS.map((tier) => ({
 							label: tier === current ? `${tier} (current)` : tier,
 							value: tier,
 						})),

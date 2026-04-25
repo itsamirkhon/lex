@@ -28,7 +28,7 @@ export async function launchPiChat(options) {
     const useBuiltWrapper = existsSync(piCliWrapperPath);
     const useDevWrapper = !useBuiltWrapper && existsSync(piCliWrapperSourcePath) && existsSync(tsxLoaderPath);
     if (!useBuiltWrapper && !useDevWrapper) {
-        throw new Error(`Feynman Pi CLI wrapper not found: ${piCliWrapperPath}`);
+        throw new Error(`Lex Pi CLI wrapper not found: ${piCliWrapperPath}`);
     }
     if (process.stdout.isTTY && options.mode !== "rpc") {
         process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
@@ -47,7 +47,7 @@ export async function launchPiChat(options) {
         child.on("error", reject);
         child.on("exit", (code, signal) => {
             if (signal) {
-                console.error(`feynman terminated because the Pi child exited with ${signal}.`);
+                console.error(`lex terminated because the Pi child exited with ${signal}.`);
                 process.exitCode = exitCodeFromSignal(signal);
                 resolvePromise();
                 return;

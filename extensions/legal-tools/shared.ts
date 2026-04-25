@@ -13,4 +13,4 @@ export const LEX_VERSION = (() => {
 	}
 })();
 
-export { FEYNMAN_ASCII_LOGO as LEX_AGENT_LOGO } from "../../logo.mjs";
+export { LEX_ASCII_LOGO as LEX_AGENT_LOGO } from "../../logo.mjs";

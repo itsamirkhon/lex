@@ -101,7 +101,7 @@ export function formatPiWebAccessDoctorLines(status = getPiWebAccessStatus()) {
         `  note: ${status.note}`,
     ];
     if (!status.configExists) {
-        lines.push("  hint: run `feynman search set <auto|perplexity|exa|gemini> [api-key]` to configure web search");
+        lines.push("  hint: run `lex search set <auto|perplexity|exa|gemini> [api-key]` to configure web search");
     }
     return lines;
 }

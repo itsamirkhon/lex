@@ -6,7 +6,7 @@ allowed-tools: Bash(docker:*)
 
 # Docker Sandbox
 
-Run research code inside Docker containers while Feynman stays on the host. The container gets the project files, runs the commands, and results sync back.
+Run research code inside Docker containers while Lex stays on the host. The container gets the project files, runs the commands, and results sync back.
 
 ## When to use
 
@@ -36,8 +36,8 @@ docker run --rm -v "$(pwd)":/workspace -w /workspace python:3.11 bash -c "
 For projects with a Dockerfile:
 
 ```bash
-docker build -t feynman-experiment .
-docker run --rm -v "$(pwd)/results":/workspace/results feynman-experiment
+docker build -t lex-experiment .
+docker run --rm -v "$(pwd)/results":/workspace/results lex-experiment
 ```
 
 For GPU workloads:

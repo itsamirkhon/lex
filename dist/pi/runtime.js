@@ -2,11 +2,11 @@ import { existsSync, readFileSync } from "node:fs";
 import { delimiter, dirname, isAbsolute, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { BROWSER_FALLBACK_PATHS, MERMAID_FALLBACK_PATHS, PANDOC_FALLBACK_PATHS, resolveExecutable, } from "../system/executables.js";
-export function getFeynmanNpmPrefixPath(lexAgentDir) {
+export function getLexNpmPrefixPath(lexAgentDir) {
     return resolve(dirname(lexAgentDir), "npm-global");
 }
-export function applyFeynmanPackageManagerEnv(lexAgentDir) {
-    const lexNpmPrefixPath = getFeynmanNpmPrefixPath(lexAgentDir);
+export function applyLexPackageManagerEnv(lexAgentDir) {
+    const lexNpmPrefixPath = getLexNpmPrefixPath(lexAgentDir);
     process.env.LEX_NPM_PREFIX = lexNpmPrefixPath;
     process.env.NPM_CONFIG_PREFIX = lexNpmPrefixPath;
     process.env.npm_config_prefix = lexNpmPrefixPath;
@@ -86,9 +86,9 @@ export function buildPiArgs(options, paths = resolvePiPaths(options.appRoot)) {
     return args;
 }
 export function buildPiEnv(options, paths = resolvePiPaths(options.appRoot), executables) {
-    const lexNpmPrefixPath = getFeynmanNpmPrefixPath(options.feynmanAgentDir);
+    const lexNpmPrefixPath = getLexNpmPrefixPath(options.lexAgentDir);
     const lexNpmBinPath = resolve(lexNpmPrefixPath, "bin");
-    const lexWebSearchConfigPath = resolve(dirname(options.feynmanAgentDir), "web-search.json");
+    const lexWebSearchConfigPath = resolve(dirname(options.lexAgentDir), "web-search.json");
     const currentPath = process.env.PATH ?? "";
     const binEntries = [paths.nodeModulesBinPath, resolve(paths.piWorkspaceNodeModulesPath, ".bin"), lexNpmBinPath];
     const binPath = binEntries.join(delimiter);
@@ -98,23 +98,23 @@ export function buildPiEnv(options, paths = resolvePiPaths(options.appRoot), exe
     return {
         ...process.env,
         PATH: `${binPath}${delimiter}${currentPath}`,
-        LEX_VERSION: options.feynmanVersion,
+        LEX_VERSION: options.lexVersion,
         LEX_SESSION_DIR: options.sessionDir,
-        LEX_MEMORY_DIR: resolve(dirname(options.feynmanAgentDir), "memory"),
+        LEX_MEMORY_DIR: resolve(dirname(options.lexAgentDir), "memory"),
         LEX_WEB_SEARCH_CONFIG: lexWebSearchConfigPath,
         LEX_NODE_EXECUTABLE: process.execPath,
         LEX_BIN_PATH: resolve(options.appRoot, "bin", "lex.js"),
         LEX_PI_CLI_PATH: paths.piCliPath,
         LEX_NPM_PREFIX: lexNpmPrefixPath,
         // Ensure the Pi child process uses Lex's agent dir for auth/models/settings.
-        FEYNMAN_CODING_AGENT_DIR: options.feynmanAgentDir,
-        PI_CODING_AGENT_DIR: options.feynmanAgentDir,
+        LEX_CODING_AGENT_DIR: options.lexAgentDir,
+        PI_CODING_AGENT_DIR: options.lexAgentDir,
         PANDOC_PATH: pandocPath,
         PI_HARDWARE_CURSOR: process.env.PI_HARDWARE_CURSOR ?? "1",
         PI_SKIP_VERSION_CHECK: process.env.PI_SKIP_VERSION_CHECK ?? "1",
         MERMAID_CLI_PATH: mermaidPath,
         PUPPETEER_EXECUTABLE_PATH: browserPath,
-        // Always pin npm's global prefix to the Feynman workspace. npm injects
+        // Always pin npm's global prefix to the Lex workspace. npm injects
         // lowercase config vars into child processes, which would otherwise leak
         // the caller's global prefix into Pi.
         NPM_CONFIG_PREFIX: lexNpmPrefixPath,

@@ -1,11 +1,11 @@
-import { FEYNMAN_ASCII_LOGO } from "../../logo.mjs";
+import { LEX_ASCII_LOGO } from "../../logo.mjs";
 export const RESET = "\x1b[0m";
 const BOLD = "\x1b[1m";
 const DIM = "\x1b[2m";
 function rgb(red, green, blue) {
     return `\x1b[38;2;${red};${green};${blue}m`;
 }
-// Match the outer CLI to the bundled Feynman Pi theme instead of generic magenta panels.
+// Match the outer CLI to the bundled Lex Pi theme instead of generic magenta panels.
 const INK = rgb(211, 198, 170);
 const STONE = rgb(157, 169, 160);
 export const ASH = rgb(133, 146, 137);
@@ -34,7 +34,7 @@ export function printSection(title) {
 }
 export function printAsciiHeader(subtitleLines = []) {
     console.log("");
-    for (const line of FEYNMAN_ASCII_LOGO) {
+    for (const line of LEX_ASCII_LOGO) {
         console.log(paint(`  ${line}`, TEAL, BOLD));
     }
     for (const line of subtitleLines) {

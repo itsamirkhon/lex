@@ -38,7 +38,7 @@ export const extensionCommandSpecs = [
 	{ name: "capabilities", args: "", section: "Project & Session", description: "Show installed packages, discovery entrypoints, and runtime capability counts.", publicDocs: true },
 	{ name: "commands", args: "", section: "Project & Session", description: "Browse all available slash commands, including built-in and package commands.", publicDocs: true },
 	{ name: "help", args: "", section: "Project & Session", description: "Show grouped Lex commands and prefill the editor with a selected command.", publicDocs: true },
-	{ name: "feynman-model", args: "", section: "Project & Session", description: "Open Lex model menu (main + per-subagent overrides).", publicDocs: true },
+	{ name: "lex-model", args: "", section: "Project & Session", description: "Open Lex model menu (main + per-subagent overrides).", publicDocs: true },
 	{ name: "init", args: "", section: "Project & Session", description: "Bootstrap AGENTS.md and matter folders for a legal project.", publicDocs: true },
 	{ name: "outputs", args: "", section: "Project & Session", description: "Browse all legal artifacts (contracts, compliance reports, research, matters).", publicDocs: true },
 	{ name: "service-tier", args: "", section: "Project & Session", description: "View or set the provider service tier override for supported models.", publicDocs: true },
@@ -126,8 +126,8 @@ export const legacyFlags = [
 	{ usage: "--cwd <path>", description: "Set the working directory for tools." },
 	{ usage: "--session-dir <path>", description: "Set the session storage directory." },
 	{ usage: "--new-session", description: "Start a new persisted session." },
-	{ usage: "--doctor", description: "Alias for `feynman doctor`." },
-	{ usage: "--setup-preview", description: "Alias for `feynman setup preview`." },
+	{ usage: "--doctor", description: "Alias for `lex doctor`." },
+	{ usage: "--setup-preview", description: "Alias for `lex setup preview`." },
 ];
 
 export const topLevelCommandNames = ["alpha", "chat", "doctor", "help", "model", "packages", "search", "setup", "status", "update"];

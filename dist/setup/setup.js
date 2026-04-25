@@ -13,11 +13,11 @@ import { printInfo, printSection, printSuccess } from "../ui/terminal.js";
 import { isInteractiveTerminal, promptConfirm, promptIntro, promptMultiSelect, promptOutro, SetupCancelledError, } from "./prompts.js";
 function printNonInteractiveSetupGuidance() {
     printInfo("Non-interactive terminal. Use explicit commands:");
-    printInfo("  feynman model login <provider>");
-    printInfo("  feynman model set <provider/model>");
-    printInfo("  # or configure API keys via env vars/auth.json and rerun `feynman model list`");
-    printInfo("  feynman alpha login");
-    printInfo("  feynman doctor");
+    printInfo("  lex model login <provider>");
+    printInfo("  lex model set <provider/model>");
+    printInfo("  # or configure API keys via env vars/auth.json and rerun `lex model list`");
+    printInfo("  lex alpha login");
+    printInfo("  lex doctor");
 }
 function summarizePackageSources(sources) {
     if (sources.length <= 3) {
@@ -39,9 +39,9 @@ async function maybeInstallBundledPackages(options) {
         return;
     }
     printInfo(`Missing packages: ${summarizePackageSources(missing.map((entry) => entry.source))}`);
-    const shouldInstall = await promptConfirm("Install missing Feynman packages now?", true);
+    const shouldInstall = await promptConfirm("Install missing Lex packages now?", true);
     if (!shouldInstall) {
-        printInfo("Skipping package install. Feynman may install missing packages later if needed.");
+        printInfo("Skipping package install. Lex may install missing packages later if needed.");
         return;
     }
     if (userMissing.length > 0) {
@@ -142,7 +142,7 @@ export async function runSetup(options) {
         return;
     }
     try {
-        await promptIntro("Feynman setup");
+        await promptIntro("Lex setup");
         await runModelSetup(options.settingsPath, options.authPath);
         await maybeInstallBundledPackages(options);
         await maybeInstallOptionalPackages(options);
@@ -158,7 +158,7 @@ export async function runSetup(options) {
         if (modelStatus.recommended && !modelStatus.currentValid) {
             printInfo(`Recommended model: ${modelStatus.recommended}`);
         }
-        await promptOutro("Feynman is ready");
+        await promptOutro("Lex is ready");
     }
     catch (error) {
         if (error instanceof SetupCancelledError) {

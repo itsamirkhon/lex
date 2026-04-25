@@ -22,16 +22,16 @@ function compareSemver(left, right) {
 }
 
 function fail(message) {
-	console.error(`[feynman] ${message}`);
+	console.error(`[lex] ${message}`);
 	process.exit(1);
 }
 
 function resolveBundledNodeVersion() {
-	const requestedNodeVersion = process.env.FEYNMAN_BUNDLED_NODE_VERSION?.trim();
+	const requestedNodeVersion = process.env.LEX_BUNDLED_NODE_VERSION?.trim();
 	if (requestedNodeVersion) {
 		if (compareSemver(parseSemver(requestedNodeVersion), parseSemver(minBundledNodeVersion)) < 0) {
 			fail(
-				`FEYNMAN_BUNDLED_NODE_VERSION=${requestedNodeVersion} is below the supported floor ${minBundledNodeVersion}`,
+				`LEX_BUNDLED_NODE_VERSION=${requestedNodeVersion} is below the supported floor ${minBundledNodeVersion}`,
 			);
 		}
 		return requestedNodeVersion;
@@ -253,14 +253,14 @@ function installBundledNode(bundleRoot, target, stagingRoot) {
 
 function writeLauncher(bundleRoot, target) {
 	if (target.launcher === "unix") {
-		const launcherPath = resolve(bundleRoot, "feynman");
+		const launcherPath = resolve(bundleRoot, "lex");
 		writeFileSync(
 			launcherPath,
 			[
 				"#!/bin/sh",
 				"set -eu",
 				'ROOT="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"',
-				'exec "$ROOT/node/bin/node" "$ROOT/app/bin/feynman.js" "$@"',
+				'exec "$ROOT/node/bin/node" "$ROOT/app/bin/lex.js" "$@"',
 				"",
 			].join("\n"),
 			"utf8",
@@ -270,22 +270,22 @@ function writeLauncher(bundleRoot, target) {
 	}
 
 	writeFileSync(
-		resolve(bundleRoot, "feynman.cmd"),
+		resolve(bundleRoot, "lex.cmd"),
 		[
 			"@echo off",
 			"setlocal",
 			'set "ROOT=%~dp0"',
 			'if "%ROOT:~-1%"=="\\" set "ROOT=%ROOT:~0,-1%"',
-			'"%ROOT%\\node\\node.exe" "%ROOT%\\app\\bin\\feynman.js" %*',
+			'"%ROOT%\\node\\node.exe" "%ROOT%\\app\\bin\\lex.js" %*',
 			"",
 		].join("\r\n"),
 		"utf8",
 	);
 	writeFileSync(
-		resolve(bundleRoot, "feynman.ps1"),
+		resolve(bundleRoot, "lex.ps1"),
 		[
 			'$Root = Split-Path -Parent $MyInvocation.MyCommand.Path',
-			'& "$Root\\node\\node.exe" "$Root\\app\\bin\\feynman.js" @args',
+			'& "$Root\\node\\node.exe" "$Root\\app\\bin\\lex.js" @args',
 			"",
 		].join("\r\n"),
 		"utf8",
@@ -298,7 +298,7 @@ function validateBundle(bundleRoot, target) {
 			? resolve(bundleRoot, "node", "node.exe")
 			: resolve(bundleRoot, "node", "bin", "node");
 
-	run(nodeExecutable, ["-e", "require('./app/.feynman/npm/node_modules/better-sqlite3'); console.log('better-sqlite3 ok')"], {
+	run(nodeExecutable, ["-e", "require('./app/.lex/npm/node_modules/better-sqlite3'); console.log('better-sqlite3 ok')"], {
 		cwd: bundleRoot,
 	});
 }
@@ -329,9 +329,9 @@ function packBundle(bundleRoot, target, outDir) {
 
 function main() {
 	const target = detectTarget();
-	const stagingRoot = mkdtempSync(join(tmpdir(), "feynman-native-"));
+	const stagingRoot = mkdtempSync(join(tmpdir(), "lex-native-"));
 	const outDir = resolve(appRoot, "dist", "release");
-	const bundleRoot = resolve(stagingRoot, `feynman-${packageJson.version}-${target.id}`);
+	const bundleRoot = resolve(stagingRoot, `lex-${packageJson.version}-${target.id}`);
 	const appDir = resolve(bundleRoot, "app");
 
 	mkdirSync(outDir, { recursive: true });
@@ -341,9 +341,9 @@ function main() {
 	copyPackageFiles(appDir);
 	installAppDependencies(appDir, stagingRoot);
 
-	const appFeynmanDir = resolve(appDir, ".feynman");
-	extractTarball(resolve(appFeynmanDir, "runtime-workspace.tgz"), appFeynmanDir, "-xzf");
-	rmSync(resolve(appFeynmanDir, "runtime-workspace.tgz"), { force: true });
+	const appLexDir = resolve(appDir, ".lex");
+	extractTarball(resolve(appLexDir, "runtime-workspace.tgz"), appLexDir, "-xzf");
+	rmSync(resolve(appLexDir, "runtime-workspace.tgz"), { force: true });
 	run(process.execPath, [resolve(appDir, "scripts", "patch-embedded-pi.mjs")], { cwd: appDir });
 
 	installBundledNode(bundleRoot, target, stagingRoot);
@@ -351,7 +351,7 @@ function main() {
 	validateBundle(bundleRoot, target);
 
 	const archivePath = packBundle(bundleRoot, target, outDir);
-	console.log(`[feynman] native bundle ready: ${archivePath}`);
+	console.log(`[lex] native bundle ready: ${archivePath}`);
 }
 
 main();

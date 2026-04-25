@@ -5,4 +5,4 @@ const appRoot = resolve(import.meta.dirname, "..");
 const releaseDir = resolve(appRoot, "dist", "release");
 
 rmSync(releaseDir, { recursive: true, force: true });
-console.log("[feynman] removed dist/release before npm pack/publish");
+console.log("[lex] removed dist/release before npm pack/publish");

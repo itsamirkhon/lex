@@ -26,15 +26,15 @@ function getUnsupportedNodeVersionLines(version = process.versions.node) {
 	const isWindows = process.platform === "win32";
 	const parsed = parseNodeVersion(version);
 	return [
-		`feynman supports Node.js ${MIN_NODE_VERSION} through ${MAX_NODE_MAJOR}.x (detected ${version}).`,
+		`lex supports Node.js ${MIN_NODE_VERSION} through ${MAX_NODE_MAJOR}.x (detected ${version}).`,
 		parsed.major > MAX_NODE_MAJOR
 			? "This newer Node release is not supported yet because native Pi packages may fail to build."
 			: isWindows
 				? "Install a supported Node.js release from https://nodejs.org, or use the standalone installer:"
 				: `Switch to a supported Node release with \`nvm install ${PREFERRED_NODE_MAJOR} && nvm use ${PREFERRED_NODE_MAJOR}\`, or use the standalone installer:`,
 		isWindows
-			? "irm https://feynman.is/install.ps1 | iex"
-			: "curl -fsSL https://feynman.is/install | bash",
+			? "Install a supported Node.js release from https://nodejs.org."
+			: "Switch to a supported Node release with nvm or install a compatible Node.js manually.",
 	];
 }
 

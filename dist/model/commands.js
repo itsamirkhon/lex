@@ -325,7 +325,7 @@ async function promptLmStudioProviderSetup() {
 }
 async function promptLiteLlmProviderSetup() {
     printSection("LiteLLM Proxy");
-    printInfo("Start the LiteLLM proxy first. Feynman uses the OpenAI-compatible chat-completions API.");
+    printInfo("Start the LiteLLM proxy first. Lex uses the OpenAI-compatible chat-completions API.");
     const baseUrlRaw = await promptText("Base URL", "http://localhost:4000/v1");
     const { baseUrl } = normalizeCustomProviderBaseUrl("openai-completions", baseUrlRaw);
     if (!baseUrl) {
@@ -345,7 +345,7 @@ async function promptLiteLlmProviderSetup() {
     const apiKeyConfig = hasKey ? "LITELLM_MASTER_KEY" : "local";
     const authHeader = hasKey;
     if (hasKey) {
-        printInfo("Set LITELLM_MASTER_KEY in your shell or .env before using Feynman.");
+        printInfo("Set LITELLM_MASTER_KEY in your shell or .env before using Lex.");
     }
     const resolvedKey = hasKey ? await resolveApiKeyConfig(apiKeyConfig) : apiKeyConfig;
     const detectedModelIds = resolvedKey
@@ -505,13 +505,13 @@ async function verifyBedrockCredentialChain() {
 }
 async function configureBedrockProvider(authPath) {
     printSection("AWS Credentials: Amazon Bedrock");
-    printInfo("Feynman will verify the AWS SDK credential chain used by Pi's Bedrock provider.");
+    printInfo("Lex will verify the AWS SDK credential chain used by Pi's Bedrock provider.");
     printInfo("Supported sources include AWS_PROFILE, ~/.aws credentials/config, SSO, ECS/IRSA, and EC2 instance roles.");
     try {
         await verifyBedrockCredentialChain();
         AuthStorage.create(authPath).set("amazon-bedrock", { type: "api_key", key: "<authenticated>" });
         printSuccess("Verified AWS credential chain and marked Amazon Bedrock as configured.");
-        printInfo("Use `feynman model list` to see available Bedrock models.");
+        printInfo("Use `lex model list` to see available Bedrock models.");
         return true;
     }
     catch (error) {
@@ -622,7 +622,7 @@ async function configureApiKeyProvider(authPath, providerId) {
     const apiKey = await promptText("Paste API key (leave empty to use env var instead)", "");
     if (!apiKey) {
         if (provider.envVar) {
-            printInfo(`Set ${provider.envVar} and rerun setup (or run \`feynman model list\`).`);
+            printInfo(`Set ${provider.envVar} and rerun setup (or run \`lex model list\`).`);
         }
         else {
             printInfo("No API key provided.");
@@ -802,7 +802,7 @@ export async function logoutModelProvider(authPath, providerId) {
 export function setDefaultModelSpec(settingsPath, authPath, spec) {
     const resolvedSpec = resolveAvailableModelSpec(authPath, spec);
     if (!resolvedSpec) {
-        throw new Error(`Model not available in Pi auth storage: ${spec}. Run \`feynman model list\` first.`);
+        throw new Error(`Model not available in Pi auth storage: ${spec}. Run \`lex model list\` first.`);
     }
     const [provider, ...rest] = resolvedSpec.split("/");
     const modelId = rest.join("/");
@@ -843,7 +843,7 @@ export async function runModelSetup(settingsPath, authPath) {
         if (status.availableModels.length === 0) {
             printWarning("No authenticated models are available yet.");
             printInfo("If you configured a custom provider, ensure it has `apiKey` set in models.json.");
-            printInfo("Tip: run `feynman doctor` to see models.json path + load errors.");
+            printInfo("Tip: run `lex doctor` to see models.json path + load errors.");
         }
     }
     if (status.currentValid) {

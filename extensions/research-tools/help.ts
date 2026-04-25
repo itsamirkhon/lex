@@ -74,7 +74,7 @@ export function registerHelpCommand(pi: ExtensionAPI): void {
 	pi.registerCommand("help", {
 		description:
 			getExtensionCommandSpec("help")?.description ??
-			"Show grouped Feynman commands and prefill the editor with a selected command.",
+			"Show grouped Lex commands and prefill the editor with a selected command.",
 		handler: async (_args, ctx) => {
 			const sections = buildHelpSections(pi);
 			const items = sections.flatMap((section) => [
@@ -82,7 +82,7 @@ export function registerHelpCommand(pi: ExtensionAPI): void {
 				...section.commands.map((cmd) => `${cmd.usage} — ${cmd.description}`),
 			]);
 
-			const selected = await ctx.ui.select("Feynman Help", items);
+			const selected = await ctx.ui.select("Lex Help", items);
 			if (!selected || selected.startsWith("---")) return;
 
 			const usage = selected.split(" — ")[0];

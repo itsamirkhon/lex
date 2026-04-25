@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 import { DefaultPackageManager, SettingsManager } from "@mariozechner/pi-coding-agent";
 import { NATIVE_PACKAGE_SOURCES, supportsNativePackageSources } from "./package-presets.js";
-import { applyFeynmanPackageManagerEnv, getFeynmanNpmPrefixPath } from "./runtime.js";
+import { applyLexPackageManagerEnv, getLexNpmPrefixPath } from "./runtime.js";
 import { getPathWithCurrentNode, resolveExecutable } from "../system/executables.js";
 const FILTERED_INSTALL_OUTPUT_PATTERNS = [
     /npm warn deprecated node-domexception@1\.0\.0/i,
@@ -15,7 +15,7 @@ const FILTERED_INSTALL_OUTPUT_PATTERNS = [
 ];
 const APP_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 function createPackageContext(workingDir, agentDir) {
-    applyFeynmanPackageManagerEnv(agentDir);
+    applyLexPackageManagerEnv(agentDir);
     process.env.PATH = getPathWithCurrentNode(process.env.PATH);
     const settingsManager = SettingsManager.create(workingDir, agentDir);
     const packageManager = new DefaultPackageManager({
@@ -80,7 +80,7 @@ function dedupeNpmSources(sources, updateToLatest) {
     return [...specs.values()];
 }
 function ensureProjectInstallRoot(workingDir) {
-    const installRoot = resolve(workingDir, ".feynman", "npm");
+    const installRoot = resolve(workingDir, ".lex", "npm");
     mkdirSync(installRoot, { recursive: true });
     const ignorePath = join(installRoot, ".gitignore");
     if (!existsSync(ignorePath)) {
@@ -88,7 +88,7 @@ function ensureProjectInstallRoot(workingDir) {
     }
     const packageJsonPath = join(installRoot, "package.json");
     if (!existsSync(packageJsonPath)) {
-        writeFileSync(packageJsonPath, JSON.stringify({ name: "feynman-packages", private: true }, null, 2) + "\n", "utf8");
+        writeFileSync(packageJsonPath, JSON.stringify({ name: "lex-packages", private: true }, null, 2) + "\n", "utf8");
     }
     return installRoot;
 }
@@ -139,7 +139,7 @@ async function runPackageManagerInstall(settingsManager, workingDir, agentDir, s
         "error",
     ];
     if (scope === "user") {
-        args.push("-g", "--prefix", getFeynmanNpmPrefixPath(agentDir));
+        args.push("-g", "--prefix", getLexNpmPrefixPath(agentDir));
     }
     else {
         args.push("--prefix", ensureProjectInstallRoot(workingDir));
@@ -166,7 +166,7 @@ async function runPackageManagerInstall(settingsManager, workingDir, agentDir, s
         child.on("exit", (code) => {
             if ((code ?? 1) !== 0) {
                 if (suppressKnownNativeFailureOutput) {
-                    reject(new Error("Installing pi-generative-ui failed. Its native glimpseui dependency did not compile against the current macOS/Xcode toolchain. Try the npm-installed Feynman path with your local Node toolchain or skip this optional preset for now."));
+                    reject(new Error("Installing pi-generative-ui failed. Its native glimpseui dependency did not compile against the current macOS/Xcode toolchain. Try the npm-installed Lex path with your local Node toolchain or skip this optional preset for now."));
                     return;
                 }
                 reject(new Error(`${packageManagerCommand.command} install failed with code ${code ?? 1}`));
@@ -186,7 +186,7 @@ function isBundledWorkspacePackagePath(installedPath, appRoot) {
     if (!installedPath) {
         return false;
     }
-    const bundledRoot = resolve(appRoot, ".feynman", "npm", "node_modules");
+    const bundledRoot = resolve(appRoot, ".lex", "npm", "node_modules");
     return installedPath.startsWith(bundledRoot);
 }
 export function getMissingConfiguredPackages(workingDir, agentDir, appRoot) {
@@ -405,11 +405,11 @@ function seedBundledPackage(globalNodeModulesRoot, bundledNodeModulesRoot, packa
     return false;
 }
 export function seedBundledWorkspacePackages(agentDir, appRoot, sources) {
-    const bundledNodeModulesRoot = resolve(appRoot, ".feynman", "npm", "node_modules");
+    const bundledNodeModulesRoot = resolve(appRoot, ".lex", "npm", "node_modules");
     if (!existsSync(bundledNodeModulesRoot)) {
         return [];
     }
-    const globalNodeModulesRoot = resolve(getFeynmanNpmPrefixPath(agentDir), "lib", "node_modules");
+    const globalNodeModulesRoot = resolve(getLexNpmPrefixPath(agentDir), "lib", "node_modules");
     const seeded = [];
     const bundledPackageNames = listBundledWorkspacePackageNames(bundledNodeModulesRoot);
     for (const packageName of bundledPackageNames) {

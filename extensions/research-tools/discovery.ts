@@ -4,18 +4,18 @@ import { resolve } from "node:path";
 
 import type { ExtensionAPI, SlashCommandInfo, ToolInfo } from "@mariozechner/pi-coding-agent";
 
-function resolveFeynmanSettingsPath(): string {
+function resolveLexSettingsPath(): string {
 	const configured = process.env.PI_CODING_AGENT_DIR?.trim();
 	const agentDir = configured
 		? configured.startsWith("~/")
 			? resolve(homedir(), configured.slice(2))
 			: resolve(configured)
-		: resolve(homedir(), ".feynman", "agent");
+		: resolve(homedir(), ".lex", "agent");
 	return resolve(agentDir, "settings.json");
 }
 
 function readConfiguredPackages(): string[] {
-	const settingsPath = resolveFeynmanSettingsPath();
+	const settingsPath = resolveLexSettingsPath();
 	if (!existsSync(settingsPath)) return [];
 
 	try {

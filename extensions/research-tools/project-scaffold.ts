@@ -1,7 +1,7 @@
 export function buildProjectAgentsTemplate(): string {
-	return `# Feynman Project Guide
+	return `# Lex Project Guide
 
-This file is read automatically at startup. It is the durable project memory for Feynman.
+This file is read automatically at startup. It is the durable project memory for Lex.
 
 ## Project Overview
 - State the research question, target artifact, target venue, and key datasets or benchmarks here.
@@ -52,7 +52,7 @@ This file is read automatically at startup. It is the durable project memory for
 export function buildSessionLogsReadme(): string {
 	return `# Session Logs
 
-Use \`/log\` to write one durable note per meaningful Feynman session.
+Use \`/log\` to write one durable note per meaningful Lex session.
 
 Recommended contents:
 - what was done

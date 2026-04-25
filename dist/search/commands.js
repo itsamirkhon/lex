@@ -19,18 +19,18 @@ export function printSearchStatus(status = getPiWebAccessStatus()) {
     printInfo(`Config path: ${status.configPath}${configPathSuffix}`);
     if (!status.configExists) {
         printInfo("Not configured yet. Run one of:");
-        printInfo("  feynman search set auto");
-        printInfo("  feynman search set perplexity <api-key>");
-        printInfo("  feynman search set exa <api-key>");
-        printInfo("  feynman search set gemini <api-key>");
+        printInfo("  lex search set auto");
+        printInfo("  lex search set perplexity <api-key>");
+        printInfo("  lex search set exa <api-key>");
+        printInfo("  lex search set gemini <api-key>");
     }
 }
 export function setSearchProvider(provider, apiKey) {
     if (!SEARCH_PROVIDERS.includes(provider)) {
-        throw new Error(`Usage: feynman search set <${SEARCH_PROVIDERS.join("|")}> [api-key]`);
+        throw new Error(`Usage: lex search set <${SEARCH_PROVIDERS.join("|")}> [api-key]`);
     }
     if (apiKey !== undefined && provider === "auto") {
-        throw new Error("The auto provider does not use an API key. Usage: feynman search set auto");
+        throw new Error("The auto provider does not use an API key. Usage: lex search set auto");
     }
     const updates = {
         provider,

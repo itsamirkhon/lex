@@ -2,10 +2,10 @@ const LEGACY_SUCCESS_HTML = "'<html><body><h2>Logged in to Alpha Hub</h2><p>You 
 const LEGACY_ERROR_HTML = "'<html><body><h2>Login failed</h2><p>You can close this tab.</p></body></html>'";
 
 const bodyAttr = 'style="font-family:system-ui,sans-serif;text-align:center;padding-top:20vh;background:#050a08;color:#f0f5f2"';
-const logo = '<h1 style="font-family:monospace;font-size:48px;color:#34d399;margin:0">feynman</h1>';
+const logo = '<h1 style="font-family:monospace;font-size:48px;color:#34d399;margin:0">lex</h1>';
 
-const FEYNMAN_SUCCESS_HTML = `'<html><body ${bodyAttr}>${logo}<h2 style="color:#34d399;margin-top:16px">Logged in</h2><p style="color:#8aaa9a">You can close this tab.</p></body></html>'`;
-const FEYNMAN_ERROR_HTML = `'<html><body ${bodyAttr}>${logo}<h2 style="color:#ef4444;margin-top:16px">Login failed</h2><p style="color:#8aaa9a">You can close this tab.</p></body></html>'`;
+const LEX_SUCCESS_HTML = `'<html><body ${bodyAttr}>${logo}<h2 style="color:#34d399;margin-top:16px">Logged in</h2><p style="color:#8aaa9a">You can close this tab.</p></body></html>'`;
+const LEX_ERROR_HTML = `'<html><body ${bodyAttr}>${logo}<h2 style="color:#ef4444;margin-top:16px">Login failed</h2><p style="color:#8aaa9a">You can close this tab.</p></body></html>'`;
 
 const CURRENT_OPEN_BROWSER = [
 	"function openBrowser(url) {",
@@ -47,10 +47,10 @@ export function patchAlphaHubAuthSource(source) {
 	let patched = source;
 
 	if (patched.includes(LEGACY_SUCCESS_HTML)) {
-		patched = patched.replace(LEGACY_SUCCESS_HTML, FEYNMAN_SUCCESS_HTML);
+		patched = patched.replace(LEGACY_SUCCESS_HTML, LEX_SUCCESS_HTML);
 	}
 	if (patched.includes(LEGACY_ERROR_HTML)) {
-		patched = patched.replace(LEGACY_ERROR_HTML, FEYNMAN_ERROR_HTML);
+		patched = patched.replace(LEGACY_ERROR_HTML, LEX_ERROR_HTML);
 	}
 	if (patched.includes(CURRENT_OPEN_BROWSER)) {
 		patched = patched.replace(CURRENT_OPEN_BROWSER, PATCHED_OPEN_BROWSER);

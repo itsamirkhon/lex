@@ -12,7 +12,7 @@ export const PI_SUBAGENTS_PATCH_TARGETS = [
 
 const RESOLVE_PI_AGENT_DIR_HELPER = [
 	"function resolvePiAgentDir(): string {",
-	'	const configured = process.env.FEYNMAN_CODING_AGENT_DIR?.trim() || process.env.PI_CODING_AGENT_DIR?.trim();',
+	'	const configured = process.env.LEX_CODING_AGENT_DIR?.trim() || process.env.PI_CODING_AGENT_DIR?.trim();',
 	'	if (!configured) return path.join(os.homedir(), ".pi", "agent");',
 	'	return configured.startsWith("~/") ? path.join(os.homedir(), configured.slice(2)) : configured;',
 	"}",
@@ -213,9 +213,9 @@ export function patchPiSubagentsSource(relativePath, source) {
 				].join("\n"),
 				[
 					"\tconst argv1 = deps.argv1 ?? process.argv[1];",
-					"\tconst feynmanPiCliPath = process.env.FEYNMAN_PI_CLI_PATH;",
-					"\tif (feynmanPiCliPath) {",
-					"\t\tconst cliPath = normalizePath(feynmanPiCliPath);",
+					"\tconst lexPiCliPath = process.env.LEX_PI_CLI_PATH;",
+					"\tif (lexPiCliPath) {",
+					"\t\tconst cliPath = normalizePath(lexPiCliPath);",
 					"\t\tif (isRunnableNodeScript(cliPath, existsSync)) return cliPath;",
 					"\t}",
 					"",

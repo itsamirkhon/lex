@@ -15,7 +15,7 @@ async function run() {
     if (!piMainPath) {
         throw new Error("Missing Pi main module path.");
     }
-    process.title = "feynman";
+    process.title = "lex";
     process.env.PI_CODING_AGENT = "true";
     process.emitWarning = (() => undefined);
     process.stdin?.on?.("error", handleStdinError);

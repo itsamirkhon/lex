@@ -93,7 +93,7 @@ export function normalizeLexSettings(settingsPath, bundledSettingsPath, defaultT
     if (settings.editorPaddingX === undefined) {
         settings.editorPaddingX = 1;
     }
-    settings.theme = "feynman";
+    settings.theme = "lex";
     settings.quietStartup = true;
     settings.collapseChangelog = true;
     const supportedCorePackages = filterPackageSourcesForCurrentNode(CORE_PACKAGE_SOURCES);

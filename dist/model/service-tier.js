@@ -1,13 +1,13 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-export const FEYNMAN_SERVICE_TIERS = [
+export const LEX_SERVICE_TIERS = [
     "auto",
     "default",
     "flex",
     "priority",
     "standard_only",
 ];
-const SERVICE_TIER_SET = new Set(FEYNMAN_SERVICE_TIERS);
+const SERVICE_TIER_SET = new Set(LEX_SERVICE_TIERS);
 const OPENAI_SERVICE_TIERS = new Set(["auto", "default", "flex", "priority"]);
 const ANTHROPIC_SERVICE_TIERS = new Set(["auto", "standard_only"]);
 function readSettings(settingsPath) {
@@ -40,7 +40,7 @@ export function setConfiguredServiceTier(settingsPath, tier) {
     writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + "\n", "utf8");
 }
 export function resolveActiveServiceTier(settingsPath) {
-    return normalizeServiceTier(process.env.FEYNMAN_SERVICE_TIER) ?? getConfiguredServiceTier(settingsPath);
+    return normalizeServiceTier(process.env.LEX_SERVICE_TIER) ?? getConfiguredServiceTier(settingsPath);
 }
 export function resolveProviderServiceTier(provider, tier) {
     if (!provider || !tier)

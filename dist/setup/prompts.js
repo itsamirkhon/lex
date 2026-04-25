@@ -7,7 +7,7 @@ export class SetupCancelledError extends Error {
 }
 function ensureInteractiveTerminal() {
     if (!process.stdin.isTTY || !process.stdout.isTTY) {
-        throw new Error("feynman setup requires an interactive terminal.");
+        throw new Error("lex setup requires an interactive terminal.");
     }
 }
 function guardCancelled(value) {

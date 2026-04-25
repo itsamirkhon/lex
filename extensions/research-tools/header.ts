@@ -8,8 +8,8 @@ import { truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
 
 import {
 	APP_ROOT,
-	FEYNMAN_AGENT_LOGO,
-	FEYNMAN_VERSION,
+	LEX_AGENT_LOGO,
+	LEX_VERSION,
 } from "./shared.js";
 
 function visibleLength(text: string): number {
@@ -105,7 +105,7 @@ async function buildAgentCatalogSummary(): Promise<{ agents: string[]; chains: s
 	const agents: string[] = [];
 	const chains: string[] = [];
 	try {
-		const entries = await readdir(resolvePath(APP_ROOT, ".feynman", "agents"), { withFileTypes: true });
+		const entries = await readdir(resolvePath(APP_ROOT, ".lex", "agents"), { withFileTypes: true });
 		for (const entry of entries) {
 			if (!entry.isFile() || !entry.name.endsWith(".md")) continue;
 			if (entry.name.endsWith(".chain.md")) {
@@ -174,7 +174,7 @@ function shortDescription(desc: string): string {
 	return desc;
 }
 
-export function installFeynmanHeader(
+export function installLexHeader(
 	pi: ExtensionAPI,
 	ctx: ExtensionContext,
 	cache: { agentSummaryPromise?: Promise<{ agents: string[]; chains: string[] }> },
@@ -231,15 +231,15 @@ export function installFeynmanHeader(
 
 				push("");
 				if (cardW >= 70) {
-					const maxLogoW = Math.max(...FEYNMAN_AGENT_LOGO.map((l) => l.length));
+					const maxLogoW = Math.max(...LEX_AGENT_LOGO.map((l) => l.length));
 					const logoOffset = " ".repeat(Math.max(0, Math.floor((cardW - maxLogoW) / 2)));
-					for (const logoLine of FEYNMAN_AGENT_LOGO) {
+					for (const logoLine of LEX_AGENT_LOGO) {
 						push(theme.fg("accent", theme.bold(`${logoOffset}${truncateVisible(logoLine, cardW)}`)));
 					}
 					push("");
 				}
 
-				const versionTag = ` v${FEYNMAN_VERSION} `;
+				const versionTag = ` v${LEX_VERSION} `;
 				const gap = Math.max(0, innerW - versionTag.length);
 				const gapL = Math.floor(gap / 2);
 				push(

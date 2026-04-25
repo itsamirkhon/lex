@@ -4,7 +4,7 @@ import { createRequire } from "node:module";
 import { homedir } from "node:os";
 import { delimiter, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { FEYNMAN_LOGO_HTML } from "../logo.mjs";
+import { LEX_LOGO_HTML } from "../logo.mjs";
 import { patchAlphaHubAuthSource } from "./lib/alpha-hub-auth-patch.mjs";
 import { patchPiAgentCoreSource } from "./lib/pi-agent-core-patch.mjs";
 import { patchPiExtensionLoaderSource } from "./lib/pi-extension-loader-patch.mjs";
@@ -14,11 +14,11 @@ import { PI_SUBAGENTS_PATCH_TARGETS, patchPiSubagentsSource, stripPiSubagentBuil
 
 const here = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(here, "..");
-const feynmanHome = resolve(process.env.FEYNMAN_HOME ?? homedir(), ".feynman");
-const feynmanNpmPrefix = resolve(feynmanHome, "npm-global");
-process.env.FEYNMAN_NPM_PREFIX = feynmanNpmPrefix;
-process.env.NPM_CONFIG_PREFIX = feynmanNpmPrefix;
-process.env.npm_config_prefix = feynmanNpmPrefix;
+const lexHome = resolve(process.env.LEX_HOME ?? homedir(), ".lex");
+const lexNpmPrefix = resolve(lexHome, "npm-global");
+process.env.LEX_NPM_PREFIX = lexNpmPrefix;
+process.env.NPM_CONFIG_PREFIX = lexNpmPrefix;
+process.env.npm_config_prefix = lexNpmPrefix;
 const appRequire = createRequire(resolve(appRoot, "package.json"));
 const isGlobalInstall = process.env.npm_config_global === "true" || process.env.npm_config_location === "global";
 
@@ -56,7 +56,7 @@ const piTuiRoot = findPackageRoot("@mariozechner/pi-tui");
 const piAiRoot = findPackageRoot("@mariozechner/pi-ai");
 
 if (!piPackageRoot) {
-	console.warn("[feynman] pi-coding-agent not found, skipping Pi patches");
+	console.warn("[lex] pi-coding-agent not found, skipping Pi patches");
 }
 
 const packageJsonPath = piPackageRoot ? resolve(piPackageRoot, "package.json") : null;
@@ -68,7 +68,7 @@ const extensionLoaderPath = piPackageRoot ? resolve(piPackageRoot, "dist", "core
 const agentLoopPath = piAgentCoreRoot ? resolve(piAgentCoreRoot, "dist", "agent-loop.js") : null;
 const terminalPath = piTuiRoot ? resolve(piTuiRoot, "dist", "terminal.js") : null;
 const editorPath = piTuiRoot ? resolve(piTuiRoot, "dist", "components", "editor.js") : null;
-const workspaceRoot = resolve(appRoot, ".feynman", "npm", "node_modules");
+const workspaceRoot = resolve(appRoot, ".lex", "npm", "node_modules");
 const workspaceAgentLoopPath = resolve(
 	workspaceRoot,
 	"@mariozechner",
@@ -95,13 +95,13 @@ const sessionSearchIndexerPath = resolve(
 	"indexer.ts",
 );
 const piMemoryPath = resolve(workspaceRoot, "@samfp", "pi-memory", "src", "index.ts");
-const settingsPath = resolve(appRoot, ".feynman", "settings.json");
-const workspaceDir = resolve(appRoot, ".feynman", "npm");
+const settingsPath = resolve(appRoot, ".lex", "settings.json");
+const workspaceDir = resolve(appRoot, ".lex", "npm");
 const workspacePackageJsonPath = resolve(workspaceDir, "package.json");
 const workspaceManifestPath = resolve(workspaceDir, ".runtime-manifest.json");
-const workspaceArchivePath = resolve(appRoot, ".feynman", "runtime-workspace.tgz");
-const workspaceSetupLockDir = resolve(appRoot, ".feynman", ".workspace-setup.lock");
-const globalNodeModulesRoot = resolve(feynmanNpmPrefix, "lib", "node_modules");
+const workspaceArchivePath = resolve(appRoot, ".lex", "runtime-workspace.tgz");
+const workspaceSetupLockDir = resolve(appRoot, ".lex", ".workspace-setup.lock");
+const globalNodeModulesRoot = resolve(lexNpmPrefix, "lib", "node_modules");
 const PRUNE_VERSION = 3;
 const WORKSPACE_SETUP_LOCK_STALE_MS = 300000;
 const NATIVE_PACKAGE_SPECS = new Set([
@@ -154,7 +154,7 @@ let cachedPackageManager = undefined;
 function resolvePackageManager() {
 	if (cachedPackageManager !== undefined) return cachedPackageManager;
 
-	const requested = process.env.FEYNMAN_PACKAGE_MANAGER?.trim();
+	const requested = process.env.LEX_PACKAGE_MANAGER?.trim();
 	const candidates = requested ? [requested] : ["npm", "pnpm", "bun"];
 	for (const candidate of candidates) {
 		if (resolveExecutable(candidate)) {
@@ -171,7 +171,7 @@ function installWorkspacePackages(packageSpecs) {
 	const packageManager = resolvePackageManager();
 	if (!packageManager) {
 		process.stderr.write(
-			"[feynman] no supported package manager found; install npm, pnpm, or bun, or set FEYNMAN_PACKAGE_MANAGER.\n",
+			"[lex] no supported package manager found; install npm, pnpm, or bun, or set LEX_PACKAGE_MANAGER.\n",
 		);
 		return false;
 	}
@@ -196,7 +196,7 @@ function installWorkspacePackages(packageSpecs) {
 	}
 
 	if (result.status !== 0) {
-		process.stderr.write(`[feynman] ${packageManager} failed while setting up bundled packages.\n`);
+		process.stderr.write(`[lex] ${packageManager} failed while setting up bundled packages.\n`);
 		return false;
 	}
 
@@ -352,9 +352,9 @@ function restorePackagedWorkspace(packageSpecs) {
 	if (!existsSync(workspaceArchivePath)) return false;
 
 	rmSync(workspaceDir, { recursive: true, force: true });
-	mkdirSync(resolve(appRoot, ".feynman"), { recursive: true });
+	mkdirSync(resolve(appRoot, ".lex"), { recursive: true });
 
-	const result = spawnSync("tar", ["-xzf", workspaceArchivePath, "-C", resolve(appRoot, ".feynman")], {
+	const result = spawnSync("tar", ["-xzf", workspaceArchivePath, "-C", resolve(appRoot, ".lex")], {
 		stdio: ["ignore", "ignore", "pipe"],
 		timeout: 300000,
 	});
@@ -429,7 +429,7 @@ function acquireWorkspaceSetupLock() {
 				}
 			} catch {}
 			if (Date.now() - startedAt > WORKSPACE_SETUP_LOCK_STALE_MS) {
-				throw new Error("Timed out waiting for another Feynman process to finish package setup.");
+				throw new Error("Timed out waiting for another Lex process to finish package setup.");
 			}
 			sleepSync(100);
 		}
@@ -472,7 +472,7 @@ function ensurePackageWorkspaceUnlocked() {
 	mkdirSync(workspaceDir, { recursive: true });
 	writeFileSync(
 		workspacePackageJsonPath,
-		JSON.stringify({ name: "feynman-packages", private: true }, null, 2) + "\n",
+		JSON.stringify({ name: "lex-packages", private: true }, null, 2) + "\n",
 		"utf8",
 	);
 
@@ -481,7 +481,7 @@ function ensurePackageWorkspaceUnlocked() {
 	const start = Date.now();
 	const spinner = setInterval(() => {
 		const elapsed = Math.round((Date.now() - start) / 1000);
-		process.stderr.write(`\r${frames[frame++ % frames.length]} setting up feynman... ${elapsed}s`);
+		process.stderr.write(`\r${frames[frame++ % frames.length]} setting up lex... ${elapsed}s`);
 	}, 80);
 
 	const result = installWorkspacePackages(supportedPackageSpecs);
@@ -503,19 +503,19 @@ ensurePackageWorkspace();
 function ensurePandoc() {
 	if (!isGlobalInstall) return;
 	if (process.platform !== "darwin") return;
-	if (process.env.FEYNMAN_SKIP_PANDOC_INSTALL === "1") return;
+	if (process.env.LEX_SKIP_PANDOC_INSTALL === "1") return;
 	if (resolveExecutable("pandoc", ["/opt/homebrew/bin/pandoc", "/usr/local/bin/pandoc"])) return;
 
 	const brewPath = resolveExecutable("brew", ["/opt/homebrew/bin/brew", "/usr/local/bin/brew"]);
 	if (!brewPath) return;
 
-	console.log("[feynman] installing pandoc...");
+	console.log("[lex] installing pandoc...");
 	const result = spawnSync(brewPath, ["install", "pandoc"], {
 		stdio: "inherit",
 		timeout: 300000,
 	});
 	if (result.status !== 0) {
-		console.warn("[feynman] warning: pandoc install failed, run `feynman --setup-preview` later");
+		console.warn("[lex] warning: pandoc install failed, run `lex --setup-preview` later");
 	}
 }
 
@@ -549,11 +549,11 @@ if (existsSync(piSubagentsRoot)) {
 
 if (packageJsonPath && existsSync(packageJsonPath)) {
 	const pkg = JSON.parse(readFileSync(packageJsonPath, "utf8"));
-	if (pkg.piConfig?.name !== "feynman" || pkg.piConfig?.configDir !== ".feynman") {
+	if (pkg.piConfig?.name !== "lex" || pkg.piConfig?.configDir !== ".lex") {
 		pkg.piConfig = {
 			...(pkg.piConfig || {}),
-			name: "feynman",
-			configDir: ".feynman",
+			name: "lex",
+			configDir: ".lex",
 		};
 		writeFileSync(packageJsonPath, JSON.stringify(pkg, null, "\t") + "\n", "utf8");
 	}
@@ -566,10 +566,10 @@ for (const entryPath of [cliPath, bunCliPath].filter(Boolean)) {
 
 	let cliSource = readFileSync(entryPath, "utf8");
 	if (cliSource.includes('process.title = "pi";')) {
-		cliSource = cliSource.replace('process.title = "pi";', 'process.title = "feynman";');
+		cliSource = cliSource.replace('process.title = "pi";', 'process.title = "lex";');
 	}
 	const stdinErrorGuard = [
-		"const feynmanHandleStdinError = (error) => {",
+		"const lexHandleStdinError = (error) => {",
 		'    if (error && typeof error === "object") {',
 		'        const code = "code" in error ? error.code : undefined;',
 		'        const syscall = "syscall" in error ? error.syscall : undefined;',
@@ -578,9 +578,9 @@ for (const entryPath of [cliPath, bunCliPath].filter(Boolean)) {
 		"        }",
 		"    }",
 		"};",
-		'process.stdin?.on?.("error", feynmanHandleStdinError);',
+		'process.stdin?.on?.("error", lexHandleStdinError);',
 	].join("\n");
-	if (!cliSource.includes('process.stdin?.on?.("error", feynmanHandleStdinError);')) {
+	if (!cliSource.includes('process.stdin?.on?.("error", lexHandleStdinError);')) {
 		cliSource = cliSource.replace(
 			'process.emitWarning = (() => { });',
 			`process.emitWarning = (() => { });\n${stdinErrorGuard}`,
@@ -634,8 +634,8 @@ if (interactiveModePath && existsSync(interactiveModePath)) {
 		writeFileSync(
 			interactiveModePath,
 			interactiveModeSource
-				.replace("`π - ${sessionName} - ${cwdBasename}`", "`feynman - ${sessionName} - ${cwdBasename}`")
-				.replace("`π - ${cwdBasename}`", "`feynman - ${cwdBasename}`"),
+				.replace("`π - ${sessionName} - ${cwdBasename}`", "`lex - ${sessionName} - ${cwdBasename}`")
+				.replace("`π - ${cwdBasename}`", "`lex - ${cwdBasename}`"),
 			"utf8",
 		);
 	}
@@ -859,7 +859,7 @@ if (existsSync(sessionSearchIndexerPath)) {
 	const source = readFileSync(sessionSearchIndexerPath, "utf8");
 	const original = 'const sessionsDir = path.join(os.homedir(), ".pi", "agent", "sessions");';
 	const replacement =
-		'const sessionsDir = process.env.FEYNMAN_SESSION_DIR ?? process.env.PI_SESSION_DIR ?? path.join(os.homedir(), ".pi", "agent", "sessions");';
+		'const sessionsDir = process.env.LEX_SESSION_DIR ?? process.env.PI_SESSION_DIR ?? path.join(os.homedir(), ".pi", "agent", "sessions");';
 	if (source.includes(original)) {
 		writeFileSync(sessionSearchIndexerPath, source.replace(original, replacement), "utf8");
 	}
@@ -871,7 +871,7 @@ const googleSharedPath = piAiRoot ? resolve(piAiRoot, "dist", "providers", "goog
 if (oauthPagePath && existsSync(oauthPagePath)) {
 	let source = readFileSync(oauthPagePath, "utf8");
 	let changed = false;
-	const target = `const LOGO_SVG = \`${FEYNMAN_LOGO_HTML}\`;`;
+	const target = `const LOGO_SVG = \`${LEX_LOGO_HTML}\`;`;
 	if (!source.includes(target)) {
 		source = source.replace(/const LOGO_SVG = `[^`]*`;/, target);
 		changed = true;
@@ -903,15 +903,15 @@ if (existsSync(piMemoryPath)) {
 	let source = readFileSync(piMemoryPath, "utf8");
 	const memoryOriginal = 'const MEMORY_DIR = join(homedir(), ".pi", "memory");';
 	const memoryReplacement =
-		'const MEMORY_DIR = process.env.FEYNMAN_MEMORY_DIR ?? process.env.PI_MEMORY_DIR ?? join(homedir(), ".pi", "memory");';
+		'const MEMORY_DIR = process.env.LEX_MEMORY_DIR ?? process.env.PI_MEMORY_DIR ?? join(homedir(), ".pi", "memory");';
 	if (source.includes(memoryOriginal)) {
 		source = source.replace(memoryOriginal, memoryReplacement);
 	}
 	const execOriginal = 'const result = await pi.exec("pi", ["-p", prompt, "--print"], {';
 	const execReplacement = [
-		'const execBinary = process.env.FEYNMAN_NODE_EXECUTABLE || process.env.FEYNMAN_EXECUTABLE || "pi";',
-		'      const execArgs = process.env.FEYNMAN_BIN_PATH',
-		'        ? [process.env.FEYNMAN_BIN_PATH, "--prompt", prompt]',
+		'const execBinary = process.env.LEX_NODE_EXECUTABLE || process.env.LEX_EXECUTABLE || "pi";',
+		'      const execArgs = process.env.LEX_BIN_PATH',
+		'        ? [process.env.LEX_BIN_PATH, "--prompt", prompt]',
 		'        : ["-p", prompt, "--print"];',
 		'      const result = await pi.exec(execBinary, execArgs, {',
 	].join("\n");
