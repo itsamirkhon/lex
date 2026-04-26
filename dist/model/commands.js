@@ -851,7 +851,12 @@ export async function runModelSetup(settingsPath, authPath) {
         return;
     }
     const recommended = status.recommended ?? status.availableModels[0];
-    if (recommended) {
-        setDefaultModelSpec(settingsPath, authPath, recommended);
+    if (status.availableModels.length > 0) {
+        const selected = await promptSelect("Choose default model:", status.availableModels.map((spec) => ({
+            value: spec,
+            label: spec,
+            hint: spec === recommended ? "recommended" : undefined,
+        })), recommended);
+        setDefaultModelSpec(settingsPath, authPath, selected);
     }
 }

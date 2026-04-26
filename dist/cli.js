@@ -36,8 +36,8 @@ async function handleAuthCommand(appRoot, agentDir) {
     console.log("Paste your OpenRouter API key (starts with sk-or-v1-...)");
     console.log("Get one at: https://openrouter.ai/keys\n");
     const key = (await ask("OpenRouter API key: ")).trim();
-    rl.close();
     if (!key.startsWith("sk-or-v1-") && !key.startsWith("sk-")) {
+        rl.close();
         console.error("\nInvalid key format. Expected sk-or-v1-... from openrouter.ai");
         process.exit(1);
     }
@@ -61,14 +61,35 @@ async function handleAuthCommand(appRoot, agentDir) {
     } else {
         writeFileSync(envPath, `${envLine}\n`, "utf8");
     }
-    // Set default model to OpenRouter Claude directly in settings.json
+    const availableOpenRouterModels = getAvailableModelRecords(authPath)
+        .filter((model) => model.provider === "openrouter")
+        .map((model) => `${model.provider}/${model.id}`);
+    const fallbackOpenRouterModels = [
+        "openrouter/anthropic/claude-sonnet-4-5",
+        "openrouter/openai/gpt-5.1",
+        "openrouter/google/gemini-2.5-pro",
+        "openrouter/anthropic/claude-opus-4-5",
+    ];
+    const modelChoices = (availableOpenRouterModels.length > 0 ? availableOpenRouterModels : fallbackOpenRouterModels).slice(0, 20);
+    console.log("\nChoose a default model:");
+    modelChoices.forEach((model, index) => {
+        console.log(`  ${index + 1}. ${model}${index === 0 ? " (recommended)" : ""}`);
+    });
+    const selectedRaw = (await ask("Model [1]: ")).trim();
+    rl.close();
+    const selectedIndex = selectedRaw ? Number.parseInt(selectedRaw, 10) - 1 : 0;
+    const selectedModel = modelChoices[Math.max(0, Math.min(selectedIndex, modelChoices.length - 1))] ?? modelChoices[0];
+    // Set default model in the Pi settings shape: provider + model id.
     try {
         const settingsPath = resolve(agentDir, "settings.json");
         const existing2 = existsSync(settingsPath) ? JSON.parse(readFileSync(settingsPath, "utf8")) : {};
-        existing2.defaultModel = "openrouter/anthropic/claude-sonnet-4-5";
+        const [provider, ...modelParts] = selectedModel.split("/");
+        existing2.defaultProvider = provider;
+        existing2.defaultModel = modelParts.join("/");
         writeFileSync(settingsPath, JSON.stringify(existing2, null, 2) + "\n", "utf8");
     } catch {}
     console.log("\n✓ API key saved to ~/.lex/agent/auth.json");
+    console.log(`✓ Default model set to ${selectedModel}`);
     console.log("\nYou're ready! Try:");
     console.log("  lex contract-review samples/acme-supplier-nda-draft.md --jurisdiction de");
     console.log("  lex compliance-check \"Acme GmbH\" --check-type sanctions");

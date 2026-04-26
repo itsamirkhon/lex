@@ -16,7 +16,6 @@ function printNonInteractiveSetupGuidance() {
     printInfo("  lex model login <provider>");
     printInfo("  lex model set <provider/model>");
     printInfo("  # or configure API keys via env vars/auth.json and rerun `lex model list`");
-    printInfo("  lex alpha login");
     printInfo("  lex doctor");
 }
 function summarizePackageSources(sources) {
@@ -144,16 +143,10 @@ export async function runSetup(options) {
     try {
         await promptIntro("Lex setup");
         await runModelSetup(options.settingsPath, options.authPath);
-        await maybeInstallBundledPackages(options);
-        await maybeInstallOptionalPackages(options);
-        await maybeLoginAlpha();
-        await maybeInstallPreviewDependencies();
         normalizeLexSettings(options.settingsPath, options.bundledSettingsPath, options.defaultThinkingLevel ?? "medium", options.authPath);
         const modelStatus = buildModelStatusSnapshotFromRecords(getSupportedModelRecords(options.authPath), getAvailableModelRecords(options.authPath), getCurrentModelSpec(options.settingsPath));
         printSection("Ready");
         printInfo(`Model: ${getCurrentModelSpec(options.settingsPath) ?? "not set"}`);
-        printInfo(`alphaXiv: ${isAlphaLoggedIn() ? "configured" : "not configured"}`);
-        printInfo(`Preview: ${resolveExecutable("pandoc", PANDOC_FALLBACK_PATHS) ? "configured" : "not configured"}`);
         printInfo(`Web: ${getPiWebAccessStatus().routeLabel}`);
         if (modelStatus.recommended && !modelStatus.currentValid) {
             printInfo(`Recommended model: ${modelStatus.recommended}`);
