@@ -140,6 +140,7 @@ Registered as Pi tools, available to all agents:
 │   ├── settings.json          # Pi packages config
 │   └── agents/                # 7 specialized subagent definitions
 ├── knowledge-base/            # BMW internal legal corpus (mock)
+│   ├── policies/              # Primary BMW policy sources (Code of Conduct)
 │   ├── templates/             # Standard NDA, supply, service agreements
 │   ├── precedents/            # Approved clause language
 │   └── memos/                 # LkSG checklist, sanctions procedure

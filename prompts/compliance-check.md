@@ -29,6 +29,7 @@ Write `outputs/.plans/<slug>.md`:
 - **Task type:** Compliance Check
 - **Topic:** <topic>
 - **Check types:** <list>
+- **Primary BMW policy source:** knowledge-base/policies/bmw-code-of-conduct-2025.md
 - **Date:** <today>
 
 ## Task ledger
@@ -45,7 +46,7 @@ Write `outputs/.plans/<slug>.md`:
   "tasks": [
     {
       "agent": "compliance-agent",
-      "task": "Read outputs/.plans/<slug>.md. Perform compliance check on: <topic>. Check types required: <check-types>. For sanctions: search OFAC SDN, EU consolidated list, UN list. For LkSG: use knowledge-base/memos/lksg-checklist.md. For ESG: check EU Taxonomy and CSRD. For GDPR: check data processing lawfulness. Write outputs/.drafts/<slug>-compliance-report.md.",
+      "task": "Read outputs/.plans/<slug>.md and knowledge-base/policies/bmw-code-of-conduct-2025.md. Perform compliance check on: <topic>. Check types required: <check-types>. Use the Code of Conduct as the primary BMW policy frame. For sanctions: search OFAC SDN, EU consolidated list, UN list. For LkSG: use knowledge-base/memos/lksg-checklist.md. For ESG: check EU Taxonomy and CSRD. For GDPR: check data processing lawfulness. Write outputs/.drafts/<slug>-compliance-report.md.",
       "output": "<slug>-compliance-report.md"
     },
     {
@@ -64,6 +65,7 @@ Write `outputs/.plans/<slug>.md`:
 Read both output files. Write synthesis to `outputs/.drafts/<slug>-synthesis.md`:
 
 - **Compliance Matrix**: PASS / FAIL / REQUIRES_REVIEW per framework
+- **BMW Code alignment**: relevant Code of Conduct sections and whether facts align or require review
 - **Critical findings**: any FAIL or REQUIRES_REVIEW with specific regulatory citation
 - **Regulatory basis**: sources from research-agent
 - **Required actions**: specific steps to achieve full compliance

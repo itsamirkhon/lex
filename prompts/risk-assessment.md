@@ -27,6 +27,7 @@ Write `outputs/.plans/<slug>.md`:
 - **Task type:** Risk Assessment
 - **Subject:** <file-or-topic>
 - **Jurisdiction:** <jurisdiction>
+- **Primary BMW policy source:** knowledge-base/policies/bmw-code-of-conduct-2025.md
 - **Date:** <today>
 
 ## Task ledger
@@ -48,7 +49,7 @@ If a file is provided (PDF/DOCX), parse it with `document_parse`. Save to `outpu
   "tasks": [
     {
       "agent": "risk-agent",
-      "task": "Read outputs/.plans/<slug>.md. Assess all legal risks in: <file path or topic description>. Jurisdiction: <jurisdiction>. Categorize risks as Litigation / Regulatory / Financial / Reputational / Operational. Grade CRITICAL / HIGH / MEDIUM / LOW. Write outputs/.drafts/<slug>-risk-assessment.md.",
+      "task": "Read outputs/.plans/<slug>.md and knowledge-base/policies/bmw-code-of-conduct-2025.md. Assess all legal and BMW Code of Conduct risks in: <file path or topic description>. Jurisdiction: <jurisdiction>. Categorize risks as Litigation / Regulatory / Financial / Reputational / Operational. Grade CRITICAL / HIGH / MEDIUM / LOW. Write outputs/.drafts/<slug>-risk-assessment.md.",
       "output": "<slug>-risk-assessment.md"
     },
     {
@@ -58,7 +59,7 @@ If a file is provided (PDF/DOCX), parse it with `document_parse`. Save to `outpu
     },
     {
       "agent": "knowledge-agent",
-      "task": "Read outputs/.plans/<slug>.md. Search knowledge-base/ for precedents and memos that address similar risks to: <topic summary>. Write outputs/.drafts/<slug>-kb-results.md.",
+      "task": "Read outputs/.plans/<slug>.md. Start with knowledge-base/policies/bmw-code-of-conduct-2025.md, then search knowledge-base/ for precedents and memos that address similar risks to: <topic summary>. Write outputs/.drafts/<slug>-kb-results.md.",
       "output": "<slug>-kb-results.md"
     }
   ],
@@ -73,6 +74,7 @@ Write `outputs/.drafts/<slug>-synthesis.md`:
 
 - **Risk Summary**: overall risk level, top 3 risks
 - **Risk Register** (sorted CRITICAL → LOW): consolidated table
+- **BMW Code alignment**: relevant Code of Conduct sections and any policy deviations
 - **Legal Context**: relevant statutes/cases from research-agent
 - **Historical Precedents**: what the knowledge base shows about similar situations
 - **Mitigation Roadmap**: ordered action items with owners and timelines

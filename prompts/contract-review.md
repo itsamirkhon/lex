@@ -33,6 +33,7 @@ Write `outputs/.plans/<slug>.md`:
 - **File:** <file path>
 - **Jurisdiction:** <jurisdiction>
 - **Contract type:** <type>
+- **Primary BMW policy source:** knowledge-base/policies/bmw-code-of-conduct-2025.md
 - **Date:** <today>
 
 ## Task ledger
@@ -64,17 +65,17 @@ Spawn three agents simultaneously:
   "tasks": [
     {
       "agent": "contract-agent",
-      "task": "Read outputs/.plans/<slug>.md and knowledge-base/playbook/negotiation-map.md for context. The contract text is at outputs/matters/<slug>/uploads/<filename>-parsed.txt (or <file> if plaintext). Perform clause-by-clause analysis for a <contract-type> under <jurisdiction> law. For every clause, classify whether it touches a playbook red line (mandatory) or a negotiable lever, and compare against the matching template in knowledge-base/templates/ if one exists. Write your analysis to outputs/.drafts/<slug>-contract-analysis.md.",
+      "task": "Read outputs/.plans/<slug>.md, knowledge-base/policies/bmw-code-of-conduct-2025.md, and knowledge-base/playbook/negotiation-map.md for context. The contract text is at outputs/matters/<slug>/uploads/<filename>-parsed.txt (or <file> if plaintext). Perform clause-by-clause analysis for a <contract-type> under <jurisdiction> law. For every clause, classify whether it touches the BMW Code of Conduct, a playbook red line (mandatory), or a negotiable lever, and compare against the matching template in knowledge-base/templates/ if one exists. Write your analysis to outputs/.drafts/<slug>-contract-analysis.md.",
       "output": "<slug>-contract-analysis.md"
     },
     {
       "agent": "risk-agent",
-      "task": "Read outputs/.plans/<slug>.md and knowledge-base/playbook/negotiation-map.md for context. The contract text is at outputs/matters/<slug>/uploads/<filename>-parsed.txt (or <file> if plaintext). Identify all legal risks for BMW as a party to this <contract-type>. Any breach or weakening of a playbook red line for this contract type is automatically CRITICAL. Jurisdiction: <jurisdiction>. Write risk register to outputs/.drafts/<slug>-risk-assessment.md.",
+      "task": "Read outputs/.plans/<slug>.md, knowledge-base/policies/bmw-code-of-conduct-2025.md, and knowledge-base/playbook/negotiation-map.md for context. The contract text is at outputs/matters/<slug>/uploads/<filename>-parsed.txt (or <file> if plaintext). Identify all legal and BMW Code of Conduct risks for BMW as a party to this <contract-type>. Any breach or weakening of a playbook red line for this contract type is automatically CRITICAL. Jurisdiction: <jurisdiction>. Write risk register to outputs/.drafts/<slug>-risk-assessment.md.",
       "output": "<slug>-risk-assessment.md"
     },
     {
       "agent": "knowledge-agent",
-      "task": "Read outputs/.plans/<slug>.md. Always start with knowledge-base/playbook/negotiation-map.md and quote the red-line / negotiable-lever rows for this contract type. Then search knowledge-base/templates/, knowledge-base/precedents/, and knowledge-base/memos/ for additional material relevant to a <contract-type> contract under <jurisdiction> law. Write results to outputs/.drafts/<slug>-kb-results.md.",
+      "task": "Read outputs/.plans/<slug>.md. Always start with knowledge-base/policies/bmw-code-of-conduct-2025.md for BMW policy framing, then read knowledge-base/playbook/negotiation-map.md and quote the red-line / negotiable-lever rows for this contract type. Then search knowledge-base/templates/, knowledge-base/precedents/, and knowledge-base/memos/ for additional material relevant to a <contract-type> contract under <jurisdiction> law. Write results to outputs/.drafts/<slug>-kb-results.md.",
       "output": "<slug>-kb-results.md"
     }
   ],
@@ -90,6 +91,7 @@ Read all three output files. Write synthesis to `outputs/.drafts/<slug>-synthesi
 - **Executive Summary** (3–5 bullets): contract type, parties, governing law, overall risk level, top 3 issues
 - **Clause Risk Table**: consolidated from contract-agent output (top 10 findings)
 - **Risk Register**: top risks from risk-agent, with mitigation priorities
+- **BMW Code alignment**: relevant Code of Conduct sections and any policy deviations
 - **Relevant Precedents**: what knowledge-agent found that applies
 
 ## Step 7 — QA pass
