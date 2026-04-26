@@ -118,6 +118,14 @@ function copyWebApp(sourceDir, targetDir) {
 	});
 }
 
+function cleanupRuntimeWebDir(runtimeWebDir) {
+	try {
+		rmSync(runtimeWebDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+	} catch {
+		// Windows can keep Next.js files locked briefly after shutdown; stale runtime dirs are harmless.
+	}
+}
+
 function linkNodeModules(targetDir) {
 	const source = existsSync(resolve(appRoot, "node_modules"))
 		? resolve(appRoot, "node_modules")
@@ -167,7 +175,7 @@ mkdirSync(lexStateDir, { recursive: true });
 syncBundledWorkspaceAssets(appRoot, options.workspaceRoot);
 const runtimeWebRoot = resolve(process.env.LEX_WEB_RUNTIME_DIR ?? resolve(homedir(), ".lex", "web-runtime"));
 mkdirSync(runtimeWebRoot, { recursive: true });
-const runtimeWebDir = resolve(runtimeWebRoot, "app");
+const runtimeWebDir = resolve(runtimeWebRoot, `app-${process.pid}-${Date.now()}`);
 copyWebApp(webDir, runtimeWebDir);
 linkNodeModules(runtimeWebDir);
 const nodeOptions = appendNodeOption(process.env.NODE_OPTIONS, `--localstorage-file=${resolve(lexStateDir, "web-localstorage")}`);
@@ -203,11 +211,15 @@ for (const signal of ["SIGINT", "SIGTERM"]) {
 	process.on(signal, () => {
 		shuttingDown = true;
 		child.kill(signal);
-		setTimeout(() => process.exit(0), 1000).unref();
+		setTimeout(() => {
+			cleanupRuntimeWebDir(runtimeWebDir);
+			process.exit(0);
+		}, 1000).unref();
 	});
 }
 
 child.on("exit", (code, signal) => {
+	cleanupRuntimeWebDir(runtimeWebDir);
 	if (signal && !shuttingDown) process.exit(128);
 	process.exit(code ?? 0);
 });
