@@ -10,21 +10,27 @@ You are running the `/contract-draft` workflow.
 ## Step 1 — Parse arguments
 
 Extract from the user's message:
-- `<contract-type>`: nda | supply | service | license
+- `<contract-type>`: nda | supply | service-md | employment | lease | work | purchase
 - `--parties`: party names (ask if not provided)
 - `--jurisdiction`: governing law (default: DE)
-- `--topic`: brief subject matter description (e.g., "software development services")
+- `--topic`: brief subject matter description (e.g., "office lease in Munich", "asset deal for spare-parts business")
 
-If contract-type is missing, ask: "What type of contract? (nda / supply / service / license)"
+If contract-type is missing, ask: "What type of contract? (nda / supply / service-md / employment / lease / work / purchase)"
 
-## Step 2 — Load BMW template
+## Step 2 — Load BMW playbook + template
 
-Check `knowledge-base/templates/` for a matching template:
+**Always load the negotiation playbook first:** `knowledge-base/playbook/negotiation-map.md`. The red-lines column for the chosen contract type is mandatory and must be reflected in every draft.
+
+Then check `knowledge-base/templates/` for a matching template:
 - `nda` → `bmw-nda-standard.md`
 - `supply` → `bmw-supply-agreement.md`
-- `service` → `bmw-service-agreement.md`
+- `service-md` → `bmw-service-agreement-md.md` (managing director / board member)
+- `employment` → `bmw-employment-agreement.md`
+- `lease` → `bmw-commercial-lease-agreement.md`
+- `work` → `bmw-work-contract.md` (Werkvertrag)
+- `purchase` → `bmw-purchase-agreement.md` (asset / real estate / share deal)
 
-Read the template. If no match, note that the draft will be based on general market standards for `<contract-type>` under `<jurisdiction>` law.
+Read the template. If no match, note that the draft will be based on general market standards for `<contract-type>` under `<jurisdiction>` law, but the red-lines from the playbook still apply.
 
 ## Step 3 — Create matter and slug
 
@@ -59,7 +65,7 @@ Write `outputs/.plans/<slug>.md`:
   "tasks": [
     {
       "agent": "contract-agent",
-      "task": "Read outputs/.plans/<slug>.md. Draft a <contract-type> contract between <Party A (BMW)> and <Party B> covering <topic>, governed by <jurisdiction> law. Use the template at <template path> as the base — fill in party-specific details and adapt clauses for the specific context. Ensure all BMW-standard clauses are present (liability cap, IP ownership, termination for cause, data protection, governing law). Write the complete draft to outputs/.drafts/<slug>-draft.md.",
+      "task": "Read outputs/.plans/<slug>.md and knowledge-base/playbook/negotiation-map.md. Draft a <contract-type> contract between <Party A (BMW)> and <Party B> covering <topic>, governed by <jurisdiction> law. Use the template at <template path> as the base — fill in party-specific details and adapt clauses for the specific context. Every red-line item from the playbook for this contract type MUST be reflected in the draft (mandatory carve-outs for intent / gross negligence / life-body-health / fraud / guarantees / mandatory statutory liability; written-form requirements; jurisdiction-specific constraints such as § 311b BGB notarization for real estate or § 87a AktG for listed-company remuneration). Label the draft internally with the perspective from the playbook (e.g. [employer-friendly], [landlord-friendly]). Write the complete draft to outputs/.drafts/<slug>-draft.md.",
       "output": "<slug>-draft.md"
     }
   ],
@@ -75,7 +81,7 @@ Write `outputs/.plans/<slug>.md`:
   "tasks": [
     {
       "agent": "risk-agent",
-      "task": "Read outputs/.plans/<slug>.md. Review the draft contract at outputs/.drafts/<slug>-draft.md for any risks to BMW. Check that BMW-standard protections are correctly included. Flag any gaps or weaknesses. Write outputs/.drafts/<slug>-draft-risk.md.",
+      "task": "Read outputs/.plans/<slug>.md, knowledge-base/playbook/negotiation-map.md, and the draft contract at outputs/.drafts/<slug>-draft.md. Verify that every red-line for this contract type is present in the draft — any missing or weakened red-line is a CRITICAL finding. Then run the standard BMW risk sweep (litigation, regulatory, financial, reputational, operational). Write outputs/.drafts/<slug>-draft-risk.md.",
       "output": "<slug>-draft-risk.md"
     }
   ],

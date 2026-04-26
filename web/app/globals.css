@@ -731,7 +731,7 @@ button {
 
 .task-dashboard {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr) 360px;
+  grid-template-columns: 320px minmax(0, 1fr);
   gap: 18px;
   width: min(1700px, calc(100% - 28px));
   min-height: 100vh;
@@ -740,15 +740,13 @@ button {
 }
 
 .task-sidebar,
-.task-main,
-.task-inspector {
+.task-main {
   min-width: 0;
 }
 
 .task-sidebar,
 .task-creator,
-.chat-panel,
-.task-inspector > section {
+.chat-panel {
   border: 1px solid rgba(255, 255, 255, 0.78);
   border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.92);
@@ -946,7 +944,7 @@ button {
 
 .artifact-browser {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) minmax(300px, 0.8fr);
+  grid-template-columns: 220px minmax(0, 1fr) minmax(360px, 0.8fr);
   min-height: 640px;
   overflow: hidden;
 }
@@ -1121,9 +1119,16 @@ button {
 
 .artifact-preview-actions {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 8px;
   margin-bottom: 12px;
+}
+
+.artifact-preview-actions a {
+  display: inline-grid;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .artifact-preview-body {

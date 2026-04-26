@@ -4,8 +4,7 @@
 > Lex coordinates specialized AI agents (contract review, compliance, research, risk) and returns
 > structured, traceable, source-cited deliverables to human lawyers.
 
-Built on the [Pi](https://github.com/mariozechner/pi) coding-agent runtime. Forked and re-purposed
-from [Feynman](https://github.com/getcompanion-ai/feynman).
+Built on the [Pi](https://github.com/mariozechner/pi) coding-agent runtime and adapted for BMW legal workflows.
 
 ---
 

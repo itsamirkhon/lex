@@ -433,6 +433,7 @@ export default function Home() {
                       <select value={selectedArtifact.folder} onChange={(event) => void moveArtifact(selectedArtifact.id, event.target.value)}>
                         {folders.map((folder) => <option key={folder} value={folder}>{folder}</option>)}
                       </select>
+                      <a className="secondary-action small" href={`/api/artifacts/${selectedArtifact.id}/download`}>Download DOCX</a>
                       <button className="secondary-action small danger" onClick={() => void deleteArtifact(selectedArtifact.id)}>Delete</button>
                     </div>
                     <div className="markdown-body compact artifact-preview-body">
@@ -569,51 +570,6 @@ export default function Home() {
         </>
         )}
       </section>
-
-      <aside className="task-inspector">
-        <section className="artifact-panel">
-          <div className="section-heading compact"><span>Task Overview</span><small>{selectedTask?.status ? statusLabel(selectedTask.status) : "idle"}</small></div>
-          {selectedTask ? (
-            <div className="task-overview-list">
-              <div><span>Status</span><strong>{statusLabel(selectedTask.status)}</strong></div>
-              <div><span>Updated</span><strong>{new Date(selectedTask.updatedAt).toLocaleString()}</strong></div>
-              <div><span>Messages</span><strong>{selectedTask.messages.length}</strong></div>
-              <div><span>Artifacts</span><strong>{visibleArtifacts.length}</strong></div>
-              <div><span>Memory</span><strong>Shared Lex memory</strong></div>
-            </div>
-          ) : <p className="muted-copy">Select a task to see status and metadata.</p>}
-        </section>
-        <section className="artifact-panel artifact-library">
-          <div className="section-heading compact"><span>Artifacts</span><small>{filteredArtifacts.length}</small></div>
-          <div className="artifact-controls">
-            <select value={selectedFolder} onChange={(event) => setSelectedFolder(event.target.value)}>
-              <option value="All">All folders</option>
-              {folders.map((folder) => <option key={folder} value={folder}>{folder}</option>)}
-            </select>
-            <input value={artifactSearch} onChange={(event) => setArtifactSearch(event.target.value)} placeholder="Search artifacts" />
-          </div>
-          <div className="artifact-controls">
-            <input value={newFolderName} onChange={(event) => setNewFolderName(event.target.value)} placeholder="New folder" />
-            <button className="secondary-action small" onClick={() => void createFolder()}>Add</button>
-          </div>
-          <div className="artifact-library-list">
-            {filteredArtifacts.map((artifact) => (
-              <article key={artifact.id} className="artifact-library-item">
-                <div>
-                  <strong>{artifact.name}</strong>
-                  <span>{artifact.taskTitle ?? artifact.taskId ?? "General output"}</span>
-                  <small>{artifact.folder} / {artifact.kind}</small>
-                </div>
-                <select value={artifact.folder} onChange={(event) => void moveArtifact(artifact.id, event.target.value)}>
-                  {folders.map((folder) => <option key={folder} value={folder}>{folder}</option>)}
-                </select>
-                <button className="secondary-action small danger" onClick={() => void deleteArtifact(artifact.id)}>Delete</button>
-              </article>
-            ))}
-            {filteredArtifacts.length === 0 && <p className="muted-copy">No artifacts in this folder yet.</p>}
-          </div>
-        </section>
-      </aside>
     </main>
   );
 }

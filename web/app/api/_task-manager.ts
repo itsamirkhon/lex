@@ -139,6 +139,8 @@ async function writeArtifactIndex(index: ArtifactIndex) {
 function inferArtifactKind(relativePath: string, name: string): ArtifactRecord["kind"] {
   if (name.includes(".provenance.")) return "provenance";
   if (relativePath.includes("/.drafts/")) return "draft";
+  if (relativePath.includes("outputs/.plans/")) return "other";
+  if (relativePath.includes("outputs/tasks/")) return "other";
   if (relativePath.includes("uploads/")) return "upload";
   if (name.endsWith(".md") || name.endsWith(".txt")) return "result";
   return "other";
@@ -205,7 +207,7 @@ class TaskManager {
 
   async listArtifacts(folder?: string): Promise<ArtifactRecord[]> {
     const index = await readArtifactIndex();
-    const all = await this.collectAllArtifacts(index);
+    const all = (await this.collectAllArtifacts(index)).filter((artifact) => artifact.kind === "result" && !artifact.isProvenance);
     return folder ? all.filter((artifact) => artifact.folder === folder) : all;
   }
 
@@ -537,6 +539,7 @@ class TaskManager {
     const startedAt = record ? Date.parse(record.createdAt) : 0;
     return all
       .filter((artifact) => artifact.taskId === taskId || (startedAt > 0 && artifact.mtime >= startedAt))
+      .filter((artifact) => artifact.kind === "result" && !artifact.isProvenance)
       .sort((a, b) => b.mtime - a.mtime)
       .slice(0, 30);
   }

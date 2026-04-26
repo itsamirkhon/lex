@@ -27,9 +27,17 @@ Read the plan file first. It specifies:
 
 Search these directories in order:
 
-1. **Templates** (`knowledge-base/templates/`): BMW standard contract templates. Search for the contract type.
-2. **Precedents** (`knowledge-base/precedents/`): Past approved clause language or decisions. Search by topic and clause type.
-3. **Memos** (`knowledge-base/memos/`): Internal legal memos on specific topics. Search by subject.
+1. **Playbook** (`knowledge-base/playbook/negotiation-map.md`): **Always read first.** Locate the row for the contract type and quote both the red-lines and the negotiable-levers columns into the output. This is non-optional.
+2. **Templates** (`knowledge-base/templates/`): BMW standard contract templates. The available templates are:
+   - `bmw-nda-standard.md` — mutual NDA
+   - `bmw-supply-agreement.md` — supply of goods (BMW as buyer)
+   - `bmw-employment-agreement.md` — employment (employer-friendly)
+   - `bmw-commercial-lease-agreement.md` — commercial lease (landlord-friendly)
+   - `bmw-service-agreement-md.md` — managing director / board service agreement (company-friendly)
+   - `bmw-work-contract.md` — work contract / Werkvertrag (customer-oriented)
+   - `bmw-purchase-agreement.md` — asset / real estate / share deal (seller-friendly / transaction-oriented)
+3. **Precedents** (`knowledge-base/precedents/`): Past approved clause language or decisions. Search by topic and clause type.
+4. **Memos** (`knowledge-base/memos/`): Internal legal memos on specific topics. Search by subject.
 
 ### Search technique
 
@@ -58,6 +66,14 @@ Rank results:
 ### Knowledge Base Summary
 
 What was found and what was not found.
+
+### Playbook Excerpt (mandatory)
+
+For the matching contract type from `knowledge-base/playbook/negotiation-map.md`:
+
+- **Drafting perspective:** [as labeled in the playbook]
+- **Red lines (must not be conceded):** [verbatim list]
+- **Negotiable levers:** [verbatim list]
 
 ### Relevant Templates
 

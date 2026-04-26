@@ -64,17 +64,17 @@ Spawn three agents simultaneously:
   "tasks": [
     {
       "agent": "contract-agent",
-      "task": "Read outputs/.plans/<slug>.md for context. The contract text is at outputs/matters/<slug>/uploads/<filename>-parsed.txt (or <file> if plaintext). Perform clause-by-clause analysis for a <contract-type> under <jurisdiction> law. Compare against knowledge-base/templates/ if a matching template exists. Write your analysis to outputs/.drafts/<slug>-contract-analysis.md.",
+      "task": "Read outputs/.plans/<slug>.md and knowledge-base/playbook/negotiation-map.md for context. The contract text is at outputs/matters/<slug>/uploads/<filename>-parsed.txt (or <file> if plaintext). Perform clause-by-clause analysis for a <contract-type> under <jurisdiction> law. For every clause, classify whether it touches a playbook red line (mandatory) or a negotiable lever, and compare against the matching template in knowledge-base/templates/ if one exists. Write your analysis to outputs/.drafts/<slug>-contract-analysis.md.",
       "output": "<slug>-contract-analysis.md"
     },
     {
       "agent": "risk-agent",
-      "task": "Read outputs/.plans/<slug>.md for context. The contract text is at outputs/matters/<slug>/uploads/<filename>-parsed.txt (or <file> if plaintext). Identify all legal risks for BMW as a party to this <contract-type>. Jurisdiction: <jurisdiction>. Write risk register to outputs/.drafts/<slug>-risk-assessment.md.",
+      "task": "Read outputs/.plans/<slug>.md and knowledge-base/playbook/negotiation-map.md for context. The contract text is at outputs/matters/<slug>/uploads/<filename>-parsed.txt (or <file> if plaintext). Identify all legal risks for BMW as a party to this <contract-type>. Any breach or weakening of a playbook red line for this contract type is automatically CRITICAL. Jurisdiction: <jurisdiction>. Write risk register to outputs/.drafts/<slug>-risk-assessment.md.",
       "output": "<slug>-risk-assessment.md"
     },
     {
       "agent": "knowledge-agent",
-      "task": "Read outputs/.plans/<slug>.md. Search knowledge-base/ for templates, precedents, and memos relevant to a <contract-type> contract under <jurisdiction> law. Write results to outputs/.drafts/<slug>-kb-results.md.",
+      "task": "Read outputs/.plans/<slug>.md. Always start with knowledge-base/playbook/negotiation-map.md and quote the red-line / negotiable-lever rows for this contract type. Then search knowledge-base/templates/, knowledge-base/precedents/, and knowledge-base/memos/ for additional material relevant to a <contract-type> contract under <jurisdiction> law. Write results to outputs/.drafts/<slug>-kb-results.md.",
       "output": "<slug>-kb-results.md"
     }
   ],
