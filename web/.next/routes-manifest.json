@@ -28,6 +28,14 @@
       "namedRegex": "^/api/artifacts/(?<nxtPartifactId>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/artifacts/[artifactId]/download",
+      "regex": "^/api/artifacts/([^/]+?)/download(?:/)?$",
+      "routeKeys": {
+        "nxtPartifactId": "nxtPartifactId"
+      },
+      "namedRegex": "^/api/artifacts/(?<nxtPartifactId>[^/]+?)/download(?:/)?$"
+    },
+    {
       "page": "/api/tasks/[taskId]",
       "regex": "^/api/tasks/([^/]+?)(?:/)?$",
       "routeKeys": {

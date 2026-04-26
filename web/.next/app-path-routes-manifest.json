@@ -1,6 +1,7 @@
 {
-  "/_not-found/page": "/_not-found",
   "/api/artifact-folders/route": "/api/artifact-folders",
+  "/_not-found/page": "/_not-found",
+  "/api/artifacts/[artifactId]/download/route": "/api/artifacts/[artifactId]/download",
   "/api/artifacts/[artifactId]/route": "/api/artifacts/[artifactId]",
   "/api/artifacts/route": "/api/artifacts",
   "/api/status/route": "/api/status",

@@ -1,6 +1,7 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/api/artifact-folders/route": "app/api/artifact-folders/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/artifacts/[artifactId]/download/route": "app/api/artifacts/[artifactId]/download/route.js",
   "/api/artifacts/[artifactId]/route": "app/api/artifacts/[artifactId]/route.js",
   "/api/artifacts/route": "app/api/artifacts/route.js",
   "/api/status/route": "app/api/status/route.js",
