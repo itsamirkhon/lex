@@ -38,11 +38,12 @@ function takeValue(args, index, name) {
 }
 
 function parseArgs(argv) {
+	const isRailway = Boolean(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID);
 	const options = {
-		port: process.env.LEX_WEB_PORT || "3000",
-		host: process.env.LEX_WEB_HOST || "localhost",
-		workspaceRoot: process.cwd(),
-		open: process.env.LEX_WEB_OPEN !== "0",
+		port: process.env.LEX_WEB_PORT || process.env.PORT || "3000",
+		host: process.env.LEX_WEB_HOST || (isRailway ? "0.0.0.0" : "localhost"),
+		workspaceRoot: resolve(process.env.LEX_WORKSPACE_ROOT || process.cwd()),
+		open: !isRailway && process.env.LEX_WEB_OPEN !== "0",
 	};
 	for (let i = 0; i < argv.length; i += 1) {
 		const arg = argv[i];

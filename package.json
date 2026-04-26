@@ -42,6 +42,7 @@
     ".env.example"
   ],
   "scripts": {
+	"start": "node ./bin/lex-web.js --no-open",
     "postinstall": "node ./scripts/postinstall.mjs",
     "start:dist": "node ./bin/lex.js"
   },
