@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 import { NextRequest, NextResponse } from "next/server";
@@ -15,19 +15,22 @@ export async function POST(req: NextRequest) {
 
   // Create matter output directory
   const matterDir = resolve(PROJECT_ROOT, "outputs", "matters", matterId);
+  const taskPath = resolve(matterDir, "task.json");
+  const logPath = resolve(matterDir, "live.log");
+  const startedAt = new Date().toISOString();
   await mkdir(matterDir, { recursive: true });
 
   // Write a task spec file for traceability
   await writeFile(
-    resolve(matterDir, "task.json"),
-    JSON.stringify({ prompt, matterId, startedAt: new Date().toISOString(), status: "running" }),
+    taskPath,
+    JSON.stringify({ prompt, matterId, startedAt, status: "running" }, null, 2) + "\n",
     "utf8",
   );
+  await writeFile(logPath, `[${startedAt}] Starting Lex workflow\n$ ${prompt}\n\n`, "utf8");
 
-  // Spawn lex CLI as a background process
+  // Keep stdout/stderr so the web UI can show real-time agent activity.
   const child = spawn("node", [LEX_BIN, "--prompt", prompt, "--cwd", PROJECT_ROOT], {
-    detached: true,
-    stdio: "ignore",
+    stdio: ["ignore", "pipe", "pipe"],
     cwd: PROJECT_ROOT,
     env: {
       ...process.env,
@@ -35,7 +38,24 @@ export async function POST(req: NextRequest) {
       LEX_WORKSPACE_ROOT: PROJECT_ROOT,
     },
   });
-  child.unref();
+
+  child.stdout?.on("data", (chunk: Buffer) => {
+    void appendFile(logPath, chunk.toString(), "utf8");
+  });
+  child.stderr?.on("data", (chunk: Buffer) => {
+    void appendFile(logPath, chunk.toString(), "utf8");
+  });
+  child.on("error", (error) => {
+    void appendFile(logPath, `\n[${new Date().toISOString()}] Failed to start: ${error.message}\n`, "utf8");
+    void writeFile(taskPath, JSON.stringify({ prompt, matterId, startedAt, finishedAt: new Date().toISOString(), status: "error", error: error.message }, null, 2) + "\n", "utf8");
+  });
+  child.on("exit", (code, signal) => {
+    const status = code === 0 ? "done" : "error";
+    const finishedAt = new Date().toISOString();
+    const suffix = signal ? `signal ${signal}` : `exit code ${code ?? "unknown"}`;
+    void appendFile(logPath, `\n[${finishedAt}] Lex workflow finished: ${suffix}\n`, "utf8");
+    void writeFile(taskPath, JSON.stringify({ prompt, matterId, startedAt, finishedAt, status, exitCode: code, signal }, null, 2) + "\n", "utf8");
+  });
 
   return NextResponse.json({ matterId, status: "running" });
 }

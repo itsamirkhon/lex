@@ -173,6 +173,10 @@ button {
   font-size: 12px;
 }
 
+.section-heading.compact {
+  margin-bottom: 10px;
+}
+
 .workflow-list {
   display: grid;
   gap: 10px;
@@ -449,6 +453,35 @@ button {
   font-size: 11px;
 }
 
+.live-activity-card {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #101827;
+  color: #dbeafe;
+}
+
+.live-activity-card .section-heading span {
+  color: #eaf2ff;
+}
+
+.live-activity-card .section-heading small {
+  color: #8fb4df;
+}
+
+.live-activity-card pre {
+  max-height: 260px;
+  margin: 0;
+  overflow: auto;
+  color: #dbeafe;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .results-panel {
   margin-top: 18px;
   overflow: hidden;
@@ -488,8 +521,10 @@ button {
 }
 
 .status-pill.running { background: #e8f2ff; color: var(--blue); }
+.status-pill.waiting_for_user { background: #fff3dc; color: var(--amber); }
 .status-pill.done { background: #e7f7f0; color: var(--green); }
 .status-pill.error { background: #fff1f1; color: var(--danger); }
+.status-pill.stopped { background: #edf2f7; color: var(--muted); }
 
 .results-grid {
   display: grid;
@@ -691,5 +726,572 @@ button {
 
   .markdown-body {
     padding: 20px;
+  }
+}
+
+.task-dashboard {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) 360px;
+  gap: 18px;
+  width: min(1700px, calc(100% - 28px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 18px 0;
+}
+
+.task-sidebar,
+.task-main,
+.task-inspector {
+  min-width: 0;
+}
+
+.task-sidebar,
+.task-creator,
+.chat-panel,
+.task-inspector > section {
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16px 48px rgba(27, 45, 71, 0.08);
+}
+
+.task-sidebar {
+  position: sticky;
+  top: 18px;
+  align-self: start;
+  max-height: calc(100vh - 36px);
+  padding: 18px;
+  overflow: auto;
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.brand-block strong {
+  display: block;
+  font-size: 20px;
+}
+
+.brand-block small {
+  color: var(--muted);
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.metric-grid div {
+  display: grid;
+  gap: 2px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper-soft);
+}
+
+.metric-grid strong {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.metric-grid span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.needs-panel,
+.task-list-panel {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.needs-button,
+.task-list-item {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: white;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.task-list-item {
+  cursor: default;
+}
+
+.task-list-main {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.task-list-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.task-list-actions button {
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-soft);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.task-list-actions button.danger,
+.secondary-action.danger {
+  border-color: rgba(199, 53, 53, 0.22);
+  color: var(--danger);
+}
+
+.needs-button {
+  border-color: rgba(180, 106, 0, 0.28);
+  background: #fff8ed;
+}
+
+.task-list-item.active {
+  border-color: rgba(10, 101, 184, 0.42);
+  box-shadow: 0 12px 28px rgba(10, 101, 184, 0.12);
+}
+
+.needs-button span,
+.task-list-item span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.task-main {
+  display: grid;
+  gap: 18px;
+}
+
+.task-creator,
+.chat-panel {
+  padding: 18px;
+}
+
+.workflow-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.workflow-tabs button {
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: white;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.workflow-tabs button.active {
+  border-color: var(--blue);
+  background: #e8f2ff;
+  color: var(--blue-dark);
+}
+
+.matter-textarea.compact {
+  min-height: 92px;
+  font-size: 15px;
+}
+
+.creator-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.creator-row select,
+.creator-row code {
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: white;
+}
+
+.creator-row select {
+  padding: 0 12px;
+}
+
+.creator-row code {
+  display: block;
+  padding: 12px;
+  overflow: hidden;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-file-upload,
+.chat-file-button {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px dashed rgba(10, 101, 184, 0.42);
+  border-radius: 999px;
+  background: #f7fbff;
+  color: var(--blue-dark);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.task-file-upload {
+  justify-content: start;
+  margin-top: 10px;
+}
+
+.task-file-upload input,
+.chat-file-button input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.chat-panel {
+  display: grid;
+  grid-template-rows: auto minmax(380px, 1fr) auto;
+  min-height: 680px;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.chat-header h1 {
+  margin: 4px 0;
+  font-size: 28px;
+  letter-spacing: -0.04em;
+}
+
+.chat-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.chat-actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.secondary-action.small {
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.message-list {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 18px 0;
+  overflow: auto;
+}
+
+.chat-message {
+  max-width: min(780px, 88%);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--paper-soft);
+  line-height: 1.55;
+}
+
+.chat-message.user {
+  justify-self: end;
+  background: #e8f2ff;
+  border-color: rgba(10, 101, 184, 0.18);
+}
+
+.chat-message.assistant {
+  justify-self: start;
+  background: white;
+}
+
+.chat-message.system,
+.chat-message.pending {
+  justify-self: stretch;
+  max-width: none;
+  background: #fff8ed;
+  border-color: rgba(180, 106, 0, 0.22);
+}
+
+.chat-message.activity,
+.chat-message.artifact-summary {
+  justify-self: stretch;
+  max-width: none;
+}
+
+.chat-message.activity {
+  background: #101827;
+  border-color: #26364f;
+  color: #dbeafe;
+}
+
+.chat-message.activity > span {
+  color: #8fb4df;
+}
+
+.chat-message.activity pre {
+  max-height: 280px;
+  margin: 0;
+  overflow: auto;
+  color: #dbeafe;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-message.artifact-summary {
+  background: #f7fbff;
+  border-color: rgba(10, 101, 184, 0.18);
+}
+
+.chat-message > span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--faint);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.chat-message p,
+.chat-message h3 {
+  margin: 0 0 8px;
+}
+
+.inline-artifacts {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.inline-artifact {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: white;
+  overflow: hidden;
+}
+
+.inline-artifact summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+.inline-artifact summary small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.markdown-body.compact.inline {
+  max-height: 360px;
+  padding: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.chat-composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.chat-composer textarea {
+  min-height: 72px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  resize: vertical;
+  outline: none;
+}
+
+.chat-send-stack {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.confirm-row {
+  display: flex;
+  gap: 10px;
+}
+
+.task-inspector {
+  position: sticky;
+  top: 18px;
+  display: grid;
+  gap: 18px;
+  align-self: start;
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+}
+
+.live-activity-card.tall pre {
+  max-height: 360px;
+}
+
+.artifact-panel {
+  padding: 14px;
+}
+
+.artifact-library {
+  display: grid;
+  gap: 12px;
+}
+
+.artifact-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.artifact-controls select,
+.artifact-controls input,
+.artifact-library-item select {
+  min-height: 38px;
+  min-width: 0;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  color: var(--ink);
+}
+
+.artifact-library-list {
+  display: grid;
+  gap: 9px;
+  max-height: 520px;
+  overflow: auto;
+}
+
+.artifact-library-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper-soft);
+}
+
+.artifact-library-item strong,
+.artifact-library-item span,
+.artifact-library-item small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.artifact-library-item span,
+.artifact-library-item small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.task-overview-list {
+  display: grid;
+  gap: 10px;
+}
+
+.task-overview-list div {
+  display: grid;
+  gap: 3px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper-soft);
+}
+
+.task-overview-list span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.task-overview-list strong {
+  font-size: 13px;
+}
+
+.markdown-body.compact {
+  max-height: 420px;
+  padding: 10px 4px;
+  overflow: auto;
+  font-size: 13px;
+}
+
+@media (max-width: 1260px) {
+  .task-dashboard {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+
+  .task-inspector {
+    grid-column: 1 / -1;
+    position: static;
+    max-height: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .task-dashboard,
+  .creator-row,
+  .chat-composer {
+    grid-template-columns: 1fr;
+  }
+
+  .task-sidebar {
+    position: static;
+    max-height: none;
+  }
+
+  .chat-header {
+    flex-direction: column;
   }
 }

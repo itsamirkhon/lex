@@ -36,9 +36,12 @@ async function handleAuthCommand(appRoot, agentDir) {
     console.log("Paste your OpenRouter API key (starts with sk-or-v1-...)");
     console.log("Get one at: https://openrouter.ai/keys\n");
     const key = (await ask("OpenRouter API key: ")).trim();
-    if (!key.startsWith("sk-or-v1-") && !key.startsWith("sk-")) {
+    if (!key.startsWith("sk-or-v1-")) {
         rl.close();
-        console.error("\nInvalid key format. Expected sk-or-v1-... from openrouter.ai");
+        console.error("\nInvalid OpenRouter key. Expected sk-or-v1-... from https://openrouter.ai/keys");
+        if (key.startsWith("sk-proj-") || key.startsWith("sk-")) {
+            console.error("This looks like an OpenAI key, not an OpenRouter key. Create an OpenRouter key or run `lex model login openai` instead.");
+        }
         process.exit(1);
     }
     // Save to ~/.lex/agent/auth.json

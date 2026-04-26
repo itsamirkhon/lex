@@ -37,12 +37,32 @@ async function collectArtifacts(matterDir: string) {
   return artifacts;
 }
 
+async function readLiveLog(matterDir: string): Promise<string> {
+  const logPath = resolve(matterDir, "live.log");
+  try {
+    const content = await readFile(logPath, "utf8");
+    return content.slice(-24000);
+  } catch {
+    return "";
+  }
+}
+
+function summarizeLiveLog(log: string): string | undefined {
+  const lines = log
+    .split("\n")
+    .map((line) => line.replace(/\u001b\[[0-9;]*m/g, "").trim())
+    .filter(Boolean)
+    .filter((line) => !line.startsWith("$ "));
+  return lines.at(-1);
+}
+
 export async function GET(req: NextRequest) {
   const matterId = req.nextUrl.searchParams.get("matterId");
   if (!matterId) return NextResponse.json({ error: "Missing matterId" }, { status: 400 });
 
   const matterDir = resolve(PROJECT_ROOT, "outputs", "matters", matterId);
   const artifacts = await collectArtifacts(matterDir);
+  const liveLog = await readLiveLog(matterDir);
 
   // Check task spec to determine status
   let taskStatus = "running";
@@ -50,8 +70,9 @@ export async function GET(req: NextRequest) {
   try {
     const taskSpec = JSON.parse(
       await readFile(resolve(matterDir, "task.json"), "utf8"),
-    ) as { status?: string };
+    ) as { status?: string; error?: string };
     if (taskSpec.status) taskStatus = taskSpec.status;
+    if (taskSpec.error) statusText = taskSpec.error;
   } catch {}
 
   const mainArtifacts = artifacts.filter((a) => !a.isProvenance && !a.path.includes("/.plans/") && !a.path.includes("/.drafts/"));
@@ -63,9 +84,11 @@ export async function GET(req: NextRequest) {
   } else if (draftArtifacts.length > 0) {
     taskStatus = "running";
     statusText = `Agents working — ${draftArtifacts.length} draft artifact${draftArtifacts.length !== 1 ? "s" : ""} in progress`;
+  } else if (taskStatus === "running") {
+    statusText = summarizeLiveLog(liveLog) ?? statusText;
   }
 
   const allVisible = [...mainArtifacts, ...draftArtifacts, ...artifacts.filter((a) => a.isProvenance)];
 
-  return NextResponse.json({ status: taskStatus, statusText, artifacts: allVisible });
+  return NextResponse.json({ status: taskStatus, statusText, artifacts: allVisible, liveLog });
 }

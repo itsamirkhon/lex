@@ -95,8 +95,10 @@ export function buildPiEnv(options, paths = resolvePiPaths(options.appRoot), exe
     const pandocPath = process.env.PANDOC_PATH ?? executables?.pandoc ?? resolveExecutable("pandoc", PANDOC_FALLBACK_PATHS);
     const mermaidPath = process.env.MERMAID_CLI_PATH ?? executables?.mermaid ?? resolveExecutable("mmdc", MERMAID_FALLBACK_PATHS);
     const browserPath = process.env.PUPPETEER_EXECUTABLE_PATH ?? executables?.browser ?? resolveExecutable("google-chrome", BROWSER_FALLBACK_PATHS);
+    const authEnv = readAuthEnvFallbacks(options.lexAgentDir);
     return {
         ...process.env,
+        ...authEnv,
         PATH: `${binPath}${delimiter}${currentPath}`,
         LEX_VERSION: options.lexVersion,
         LEX_SESSION_DIR: options.sessionDir,
@@ -120,4 +122,22 @@ export function buildPiEnv(options, paths = resolvePiPaths(options.appRoot), exe
         NPM_CONFIG_PREFIX: lexNpmPrefixPath,
         npm_config_prefix: lexNpmPrefixPath,
     };
+}
+
+function readAuthEnvFallbacks(lexAgentDir) {
+    const authPath = resolve(lexAgentDir, "auth.json");
+    try {
+        const auth = JSON.parse(readFileSync(authPath, "utf8"));
+        const env = {};
+        const openRouterKey = auth?.openrouter?.type === "api_key" && typeof auth.openrouter.key === "string"
+            ? auth.openrouter.key.trim()
+            : "";
+        if (openRouterKey && !process.env.OPENROUTER_API_KEY) {
+            env.OPENROUTER_API_KEY = openRouterKey;
+        }
+        return env;
+    }
+    catch {
+        return {};
+    }
 }
