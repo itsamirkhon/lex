@@ -1,7 +1,16 @@
 {
   "/_not-found/page": "/_not-found",
+  "/api/artifact-folders/route": "/api/artifact-folders",
+  "/api/artifacts/[artifactId]/route": "/api/artifacts/[artifactId]",
+  "/api/artifacts/route": "/api/artifacts",
   "/api/status/route": "/api/status",
   "/api/task/route": "/api/task",
+  "/api/tasks/[taskId]/archive/route": "/api/tasks/[taskId]/archive",
+  "/api/tasks/[taskId]/events/route": "/api/tasks/[taskId]/events",
+  "/api/tasks/[taskId]/messages/route": "/api/tasks/[taskId]/messages",
+  "/api/tasks/[taskId]/route": "/api/tasks/[taskId]",
+  "/api/tasks/[taskId]/stop/route": "/api/tasks/[taskId]/stop",
+  "/api/tasks/route": "/api/tasks",
   "/api/upload/route": "/api/upload",
   "/page": "/"
 }

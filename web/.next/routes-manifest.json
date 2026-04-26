@@ -13,7 +13,61 @@
     }
   ],
   "headers": [],
-  "dynamicRoutes": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/api/artifacts/[artifactId]",
+      "regex": "^/api/artifacts/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPartifactId": "nxtPartifactId"
+      },
+      "namedRegex": "^/api/artifacts/(?<nxtPartifactId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/tasks/[taskId]",
+      "regex": "^/api/tasks/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtaskId": "nxtPtaskId"
+      },
+      "namedRegex": "^/api/tasks/(?<nxtPtaskId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/tasks/[taskId]/archive",
+      "regex": "^/api/tasks/([^/]+?)/archive(?:/)?$",
+      "routeKeys": {
+        "nxtPtaskId": "nxtPtaskId"
+      },
+      "namedRegex": "^/api/tasks/(?<nxtPtaskId>[^/]+?)/archive(?:/)?$"
+    },
+    {
+      "page": "/api/tasks/[taskId]/events",
+      "regex": "^/api/tasks/([^/]+?)/events(?:/)?$",
+      "routeKeys": {
+        "nxtPtaskId": "nxtPtaskId"
+      },
+      "namedRegex": "^/api/tasks/(?<nxtPtaskId>[^/]+?)/events(?:/)?$"
+    },
+    {
+      "page": "/api/tasks/[taskId]/messages",
+      "regex": "^/api/tasks/([^/]+?)/messages(?:/)?$",
+      "routeKeys": {
+        "nxtPtaskId": "nxtPtaskId"
+      },
+      "namedRegex": "^/api/tasks/(?<nxtPtaskId>[^/]+?)/messages(?:/)?$"
+    },
+    {
+      "page": "/api/tasks/[taskId]/stop",
+      "regex": "^/api/tasks/([^/]+?)/stop(?:/)?$",
+      "routeKeys": {
+        "nxtPtaskId": "nxtPtaskId"
+      },
+      "namedRegex": "^/api/tasks/(?<nxtPtaskId>[^/]+?)/stop(?:/)?$"
+    }
+  ],
   "staticRoutes": [
     {
       "page": "/",
@@ -30,20 +84,19 @@
   ],
   "dataRoutes": [],
   "rsc": {
-    "header": "RSC",
-    "varyHeader": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
-    "prefetchHeader": "Next-Router-Prefetch",
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
     "didPostponeHeader": "x-nextjs-postponed",
     "contentTypeHeader": "text/x-component",
     "suffix": ".rsc",
     "prefetchSuffix": ".prefetch.rsc",
-    "prefetchSegmentHeader": "Next-Router-Segment-Prefetch",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
     "prefetchSegmentSuffix": ".segment.rsc",
     "prefetchSegmentDirSuffix": ".segments"
   },
   "rewriteHeaders": {
     "pathHeader": "x-nextjs-rewritten-path",
     "queryHeader": "x-nextjs-rewritten-query"
-  },
-  "rewrites": []
+  }
 }

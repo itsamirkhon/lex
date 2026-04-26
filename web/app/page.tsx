@@ -85,8 +85,16 @@ function statusLabel(status: TaskStatus) {
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, init);
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error ?? `Request failed: ${response.status}`);
+  if (!response.ok) {
+    const error = new Error(data.error ?? `Request failed: ${response.status}`) as Error & { status?: number };
+    error.status = response.status;
+    throw error;
+  }
   return data as T;
+}
+
+function getErrorStatus(error: unknown) {
+  return typeof error === "object" && error !== null && "status" in error ? (error as { status?: number }).status : undefined;
 }
 
 export default function Home() {
@@ -105,6 +113,8 @@ export default function Home() {
   const [newFolderName, setNewFolderName] = useState("");
   const [uploadedFile, setUploadedFile] = useState<{ path: string; filename: string } | null>(null);
   const [chatUpload, setChatUpload] = useState<{ path: string; filename: string } | null>(null);
+  const [viewMode, setViewMode] = useState<"tasks" | "artifacts">("tasks");
+  const [selectedArtifactId, setSelectedArtifactId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const messageEndRef = useRef<HTMLDivElement>(null);
 
@@ -124,18 +134,36 @@ export default function Home() {
       return folderMatch && queryMatch;
     });
   }, [artifacts, artifactSearch, selectedFolder]);
+  const selectedArtifact = useMemo(() => artifacts.find((artifact) => artifact.id === selectedArtifactId) ?? filteredArtifacts[0] ?? null, [artifacts, filteredArtifacts, selectedArtifactId]);
   const liveLog = selectedTask?.liveLog?.trim() ?? "";
 
   async function refreshTasks() {
-    const data = await fetchJson<{ tasks: TaskSummary[] }>("/api/tasks");
-    setTasks(data.tasks);
-    if (!selectedTaskId && data.tasks[0]) setSelectedTaskId(data.tasks[0].id);
+    try {
+      const data = await fetchJson<{ tasks: TaskSummary[] }>("/api/tasks");
+      setTasks(data.tasks);
+      if (!selectedTaskId && data.tasks[0]) setSelectedTaskId(data.tasks[0].id);
+      if (selectedTaskId && !data.tasks.some((task) => task.id === selectedTaskId) && !selectedTask) {
+        setSelectedTaskId(data.tasks[0]?.id ?? null);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
   }
 
   async function refreshTask(taskId: string) {
-    const data = await fetchJson<{ task: TaskDetails }>(`/api/tasks/${taskId}`);
+    try {
+      const data = await fetchJson<{ task: TaskDetails }>(`/api/tasks/${taskId}`);
       setSelectedTask(data.task);
       void refreshArtifacts();
+    } catch (err) {
+      if (getErrorStatus(err) === 404) {
+        setSelectedTask(null);
+        setSelectedTaskId(null);
+        await refreshTasks();
+        return;
+      }
+      throw err;
+    }
   }
 
   async function refreshArtifacts() {
@@ -235,6 +263,7 @@ export default function Home() {
   async function deleteArtifact(artifactId: string) {
     if (!confirm("Delete this artifact file from outputs?")) return;
     await fetchJson(`/api/artifacts/${artifactId}`, { method: "DELETE" });
+    if (selectedArtifactId === artifactId) setSelectedArtifactId(null);
     await refreshArtifacts();
     if (selectedTaskId) await refreshTask(selectedTaskId).catch(() => undefined);
   }
@@ -261,12 +290,18 @@ export default function Home() {
 
   useEffect(() => {
     if (!selectedTaskId) return;
-    void refreshTask(selectedTaskId);
+    void refreshTask(selectedTaskId).catch((err) => setError(err instanceof Error ? err.message : String(err)));
     const events = new EventSource(`/api/tasks/${selectedTaskId}/events`);
     events.onmessage = (event) => {
       const data = JSON.parse(event.data) as { task: TaskDetails | null };
       if (data.task) setSelectedTask(data.task);
       void refreshTasks();
+    };
+    events.onerror = () => {
+      events.close();
+      void refreshTask(selectedTaskId).catch((err) => {
+        if (getErrorStatus(err) !== 404) setError(err instanceof Error ? err.message : String(err));
+      });
     };
     return () => events.close();
   }, [selectedTaskId]);
@@ -299,6 +334,11 @@ export default function Home() {
           <div><strong>{doneCount}</strong><span>done</span></div>
         </div>
 
+        <button className={`artifact-nav-button ${viewMode === "artifacts" ? "active" : ""}`} onClick={() => setViewMode("artifacts")}>
+          <strong>Artifacts</strong>
+          <span>{artifacts.length} files across {folders.length} folders</span>
+        </button>
+
         {needsResponse.length > 0 && (
           <section className="needs-panel">
             <span className="sidebar-title">Needs Your Response</span>
@@ -315,7 +355,7 @@ export default function Home() {
           <span className="sidebar-title">Tasks</span>
           {tasks.map((task) => (
             <div key={task.id} className={`task-list-item ${selectedTaskId === task.id ? "active" : ""}`}>
-              <button className="task-list-main" onClick={() => setSelectedTaskId(task.id)}>
+              <button className="task-list-main" onClick={() => { setSelectedTaskId(task.id); setViewMode("tasks"); }}>
                 <strong>{task.title}</strong>
                 <span>{task.statusText}</span>
                 <em className={`status-pill ${task.status}`}>{statusLabel(task.status)}</em>
@@ -331,6 +371,80 @@ export default function Home() {
       </aside>
 
       <section className="task-main">
+        {viewMode === "artifacts" ? (
+          <div className="artifact-workspace">
+            <header className="artifact-workspace-header">
+              <div>
+                <span className="eyebrow">Artifact Library</span>
+                <h1>Folders and artifacts</h1>
+                <p>Open, organize, move, and delete legal outputs across all tasks.</p>
+              </div>
+              <button className="secondary-action small" onClick={() => setViewMode("tasks")}>Back to tasks</button>
+            </header>
+
+            <div className="artifact-browser">
+              <aside className="folder-column">
+                <button className={selectedFolder === "All" ? "active" : ""} onClick={() => setSelectedFolder("All")}>All artifacts <span>{artifacts.length}</span></button>
+                {folders.map((folder) => (
+                  <button key={folder} className={selectedFolder === folder ? "active" : ""} onClick={() => setSelectedFolder(folder)}>
+                    {folder} <span>{artifacts.filter((artifact) => artifact.folder === folder).length}</span>
+                  </button>
+                ))}
+                <div className="folder-create-inline">
+                  <input value={newFolderName} onChange={(event) => setNewFolderName(event.target.value)} placeholder="New folder" />
+                  <button onClick={() => void createFolder()}>Add</button>
+                </div>
+              </aside>
+
+              <section className="artifact-table-panel">
+                <div className="artifact-table-toolbar">
+                  <input value={artifactSearch} onChange={(event) => setArtifactSearch(event.target.value)} placeholder="Search by file, task, or path" />
+                  <span>{filteredArtifacts.length} shown</span>
+                </div>
+                <div className="artifact-table">
+                  <div className="artifact-row artifact-row-head">
+                    <span>Name</span>
+                    <span>Folder</span>
+                    <span>Task</span>
+                    <span>Updated</span>
+                  </div>
+                  {filteredArtifacts.map((artifact) => (
+                    <button key={artifact.id} className={`artifact-row ${selectedArtifact?.id === artifact.id ? "active" : ""}`} onClick={() => setSelectedArtifactId(artifact.id)}>
+                      <span><strong>{artifact.name}</strong><small>{artifact.path}</small></span>
+                      <span>{artifact.folder}</span>
+                      <span>{artifact.taskTitle ?? artifact.taskId ?? "General"}</span>
+                      <span>{new Date(artifact.mtime).toLocaleDateString()}</span>
+                    </button>
+                  ))}
+                  {filteredArtifacts.length === 0 && <p className="muted-copy">No artifacts match this folder/search.</p>}
+                </div>
+              </section>
+
+              <aside className="artifact-preview-panel">
+                {selectedArtifact ? (
+                  <>
+                    <div className="section-heading compact"><span>{selectedArtifact.name}</span><small>{selectedArtifact.kind}</small></div>
+                    <div className="artifact-meta-grid">
+                      <div><span>Folder</span><strong>{selectedArtifact.folder}</strong></div>
+                      <div><span>Task</span><strong>{selectedArtifact.taskTitle ?? selectedArtifact.taskId ?? "General"}</strong></div>
+                      <div><span>Path</span><strong>{selectedArtifact.path}</strong></div>
+                    </div>
+                    <div className="artifact-preview-actions">
+                      <select value={selectedArtifact.folder} onChange={(event) => void moveArtifact(selectedArtifact.id, event.target.value)}>
+                        {folders.map((folder) => <option key={folder} value={folder}>{folder}</option>)}
+                      </select>
+                      <button className="secondary-action small danger" onClick={() => void deleteArtifact(selectedArtifact.id)}>Delete</button>
+                    </div>
+                    <div className="markdown-body compact artifact-preview-body">
+                      <ReactMarkdown>{selectedArtifact.content}</ReactMarkdown>
+                    </div>
+                  </>
+                ) : <p className="muted-copy">Select an artifact to preview it.</p>}
+              </aside>
+            </div>
+          </div>
+        ) : (
+        <>
         <div className="task-creator">
           <div className="section-heading">
             <span>Create Task</span>
@@ -452,6 +566,8 @@ export default function Home() {
             <div className="welcome-results"><h3>No task selected</h3><p>Create a task to start a dedicated AI chat.</p></div>
           )}
         </div>
+        </>
+        )}
       </section>
 
       <aside className="task-inspector">
