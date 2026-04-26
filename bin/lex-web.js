@@ -4,6 +4,7 @@ import { relative, resolve, sep } from "node:path";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { createServer } from "node:net";
+import { homedir } from "node:os";
 
 const here = import.meta.dirname;
 const appRoot = resolve(here, "..");
@@ -145,7 +146,9 @@ options.port = await findAvailablePort(options.host, options.port);
 const url = `http://${options.host}:${options.port}`;
 const lexStateDir = resolve(options.workspaceRoot, ".lex");
 mkdirSync(lexStateDir, { recursive: true });
-const runtimeWebDir = resolve(lexStateDir, "web-app");
+const runtimeWebRoot = resolve(process.env.LEX_WEB_RUNTIME_DIR ?? resolve(homedir(), ".lex", "web-runtime"));
+mkdirSync(runtimeWebRoot, { recursive: true });
+const runtimeWebDir = resolve(runtimeWebRoot, "app");
 copyWebApp(webDir, runtimeWebDir);
 linkNodeModules(runtimeWebDir);
 const nodeOptions = appendNodeOption(process.env.NODE_OPTIONS, `--localstorage-file=${resolve(lexStateDir, "web-localstorage")}`);
