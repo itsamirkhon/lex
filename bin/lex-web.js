@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { cpSync, existsSync, mkdirSync, rmSync, symlinkSync } from "node:fs";
 import { relative, resolve, sep } from "node:path";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { createServer } from "node:net";
 import { homedir } from "node:os";
@@ -127,6 +127,22 @@ function linkNodeModules(targetDir) {
 	symlinkSync(source, link, process.platform === "win32" ? "junction" : "dir");
 }
 
+function shouldRunProductionServer() {
+	return Boolean(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID || process.env.NODE_ENV === "production");
+}
+
+function buildWebApp(runtimeWebDir, env) {
+	console.log("Building Lex web runtime...");
+	const result = spawnSync(process.execPath, [nextBin, "build"], {
+		cwd: runtimeWebDir,
+		stdio: "inherit",
+		env,
+	});
+	if (result.status !== 0) {
+		process.exit(result.status ?? 1);
+	}
+}
+
 const options = parseArgs(process.argv.slice(2));
 if (options.help) {
 	printHelp();
@@ -155,6 +171,16 @@ const runtimeWebDir = resolve(runtimeWebRoot, "app");
 copyWebApp(webDir, runtimeWebDir);
 linkNodeModules(runtimeWebDir);
 const nodeOptions = appendNodeOption(process.env.NODE_OPTIONS, `--localstorage-file=${resolve(lexStateDir, "web-localstorage")}`);
+const childEnv = {
+	...process.env,
+	LEX_APP_ROOT: appRoot,
+	LEX_WORKSPACE_ROOT: options.workspaceRoot,
+	NODE_OPTIONS: nodeOptions,
+};
+const productionServer = shouldRunProductionServer();
+if (productionServer) {
+	buildWebApp(runtimeWebDir, childEnv);
+}
 if (options.port !== requestedPort) {
 	console.log(`Port ${requestedPort} is busy; using ${options.port} instead.`);
 }
@@ -162,15 +188,10 @@ console.log(`Lex web starting at ${url}`);
 console.log(`Workspace: ${options.workspaceRoot}`);
 console.log("Press Ctrl+C to stop.");
 
-const child = spawn(process.execPath, [nextBin, "dev", "--port", options.port, "--hostname", options.host], {
+const child = spawn(process.execPath, [nextBin, productionServer ? "start" : "dev", "--port", options.port, "--hostname", options.host], {
 	cwd: runtimeWebDir,
 	stdio: "inherit",
-	env: {
-		...process.env,
-		LEX_APP_ROOT: appRoot,
-		LEX_WORKSPACE_ROOT: options.workspaceRoot,
-		NODE_OPTIONS: nodeOptions,
-	},
+	env: childEnv,
 });
 
 if (options.open) {
