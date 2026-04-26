@@ -10,7 +10,7 @@ const isAlphaLoggedIn = () => false;
 const loginAlpha = async () => ({});
 const logoutAlpha = () => {};
 import { SettingsManager } from "@mariozechner/pi-coding-agent";
-import { syncBundledAssets } from "./bootstrap/sync.js";
+import { syncBundledAssets, syncBundledWorkspaceAssets } from "./bootstrap/sync.js";
 import { ensureLexHome, getDefaultSessionDir, getLexAgentDir, getLexHome } from "./config/paths.js";
 import { launchPiChat } from "./pi/launch.js";
 import { installPackageSources, updateConfiguredPackages } from "./pi/package-ops.js";
@@ -490,6 +490,7 @@ export async function main() {
         throw new Error("Unable to determine the installed Lex version.");
     }
     const workingDir = resolve(values.cwd ?? process.cwd());
+    syncBundledWorkspaceAssets(appRoot, workingDir);
     const sessionDir = resolve(values["session-dir"] ?? getDefaultSessionDir(lexHome));
     const lexSettingsPath = resolve(lexAgentDir, "settings.json");
     const lexAuthPath = resolve(lexAgentDir, "auth.json");

@@ -140,12 +140,14 @@ if (!nextBin) {
 }
 
 await import(pathToFileURL(resolve(appRoot, "scripts", "patch-embedded-pi.mjs")).href);
+const { syncBundledWorkspaceAssets } = await import(pathToFileURL(resolve(appRoot, "dist", "bootstrap", "sync.js")).href);
 
 const requestedPort = options.port;
 options.port = await findAvailablePort(options.host, options.port);
 const url = `http://${options.host}:${options.port}`;
 const lexStateDir = resolve(options.workspaceRoot, ".lex");
 mkdirSync(lexStateDir, { recursive: true });
+syncBundledWorkspaceAssets(appRoot, options.workspaceRoot);
 const runtimeWebRoot = resolve(process.env.LEX_WEB_RUNTIME_DIR ?? resolve(homedir(), ".lex", "web-runtime"));
 mkdirSync(runtimeWebRoot, { recursive: true });
 const runtimeWebDir = resolve(runtimeWebRoot, "app");

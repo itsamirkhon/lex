@@ -141,3 +141,15 @@ export function syncBundledAssets(appRoot, agentDir) {
     writeBootstrapState(statePath, state);
     return result;
 }
+export function syncBundledWorkspaceAssets(appRoot, workingDir) {
+    const statePath = getBootstrapStatePath();
+    const state = readBootstrapState(statePath);
+    const result = {
+        copied: [],
+        updated: [],
+        skipped: [],
+    };
+    syncManagedFiles(resolve(appRoot, "knowledge-base"), resolve(workingDir, "knowledge-base"), `workspace:${workingDir}:knowledge-base`, state, result);
+    writeBootstrapState(statePath, state);
+    return result;
+}
