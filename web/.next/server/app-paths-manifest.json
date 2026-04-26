@@ -1,6 +1,6 @@
 {
-  "/api/artifact-folders/route": "app/api/artifact-folders/route.js",
   "/_not-found/page": "app/_not-found/page.js",
+  "/api/artifact-folders/route": "app/api/artifact-folders/route.js",
   "/api/artifacts/[artifactId]/download/route": "app/api/artifacts/[artifactId]/download/route.js",
   "/api/artifacts/[artifactId]/route": "app/api/artifacts/[artifactId]/route.js",
   "/api/artifacts/route": "app/api/artifacts/route.js",
@@ -10,8 +10,8 @@
   "/api/tasks/[taskId]/events/route": "app/api/tasks/[taskId]/events/route.js",
   "/api/tasks/[taskId]/messages/route": "app/api/tasks/[taskId]/messages/route.js",
   "/api/tasks/[taskId]/route": "app/api/tasks/[taskId]/route.js",
-  "/api/tasks/[taskId]/stop/route": "app/api/tasks/[taskId]/stop/route.js",
   "/api/tasks/route": "app/api/tasks/route.js",
   "/api/upload/route": "app/api/upload/route.js",
+  "/api/tasks/[taskId]/stop/route": "app/api/tasks/[taskId]/stop/route.js",
   "/page": "app/page.js"
 }
