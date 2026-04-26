@@ -12,6 +12,9 @@ export const NATIVE_PACKAGE_SOURCES = [
     "npm:@kaiserlich-dev/pi-session-search",
     "npm:@samfp/pi-memory",
 ];
+export const RAILWAY_UNSUPPORTED_PACKAGE_SOURCES = [
+    "npm:@samfp/pi-memory",
+];
 const CORE_PACKAGE_UPDATE_ALIASES = {
     memory: "npm:@samfp/pi-memory",
     "pi-memory": "npm:@samfp/pi-memory",
@@ -54,10 +57,15 @@ export function supportsNativePackageSources(version = process.versions.node) {
     return parseNodeMajor(version) <= MAX_NATIVE_PACKAGE_NODE_MAJOR;
 }
 export function filterPackageSourcesForCurrentNode(sources, version = process.versions.node) {
-    if (supportsNativePackageSources(version)) {
-        return [...sources];
+    const blocked = new Set();
+    if (!supportsNativePackageSources(version)) {
+        for (const source of NATIVE_PACKAGE_SOURCES)
+            blocked.add(source);
     }
-    const blocked = new Set(NATIVE_PACKAGE_SOURCES);
+    if (process.env.RAILWAY_ENVIRONMENT || process.env.LEX_DISABLE_PI_MEMORY === "1") {
+        for (const source of RAILWAY_UNSUPPORTED_PACKAGE_SOURCES)
+            blocked.add(source);
+    }
     return sources.filter((source) => !blocked.has(source));
 }
 export function normalizeOptionalPackagePresetName(name) {

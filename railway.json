@@ -5,6 +5,7 @@
   },
   "deploy": {
     "startCommand": "node ./bin/lex-web.js --no-open",
+    "preDeployCommand": "rm -rf /data/.lex/agent/settings.json /data/.lex/npm-global/lib/node_modules/@samfp/pi-memory /root/.lex/agent/settings.json /root/.lex/npm-global/lib/node_modules/@samfp/pi-memory || true",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
